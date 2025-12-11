@@ -20,6 +20,11 @@ export const ResultsView: React.FC = () => {
 	const myGold = myPlayer.gold;
 	const isEliminated = myGold <= 0;
 	const wasAccused = myPlayer.accusedOfCheating;
+	
+	// Check if at least one cheater was actually caught (not wrongly accused)
+	const anyCheaterCaught = Object.values(players).some(
+		p => p.accusedOfCheating && p.cheated
+	);
 
 	// Calculate winnings/losses
 	const myBet = myPlayer.bet;
@@ -68,16 +73,14 @@ export const ResultsView: React.FC = () => {
 				</div>
 			)}
 
-			{/* Folded/No Bet Notification - Show if punishment happened but player didn't receive gold */}
-			{!myPlayer.receivedRedistributedGold && punishmentUsedThisRound && (myPlayer.folded || myPlayer.bet === 0) && (
-				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
-					<p className="text-center text-gray-700">
-						{config.foldedNoGoldMessage}
-					</p>
-				</div>
-			)}
-
-			{/* Accusation Notification */}
+		{/* Folded/No Bet Notification - Show if punishment happened and at least one cheater was caught, but player didn't receive gold */}
+		{!myPlayer.receivedRedistributedGold && punishmentUsedThisRound && anyCheaterCaught && (myPlayer.folded || myPlayer.bet === 0) && (
+			<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
+				<p className="text-center text-gray-700">
+					{config.foldedNoGoldMessage}
+				</p>
+			</div>
+		)}			{/* Accusation Notification */}
 			{wasAccused && (
 				<div className={`rounded-lg border-2 p-6 shadow-lg ${
 					myPlayer.wronglyAccused

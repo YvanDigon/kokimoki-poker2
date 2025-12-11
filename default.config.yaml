@@ -8,7 +8,7 @@ gameLobbyMd: |
   The game will start once the host presses the start button.
 
 connectionsMd: |
-  # Connections example
+  # List of players
 
 sharedStateMd: |
   # Shared State example
@@ -29,6 +29,7 @@ playerNamePlaceholder: 'Your name...'
 playerNameLabel: 'Name:'
 playerNameButton: 'Continue'
 randomNameButton: 'Random Name'
+dontCheatHelpText: 'Be a good boy, don''t cheat. Don''t try to figure out how to cheat.'
 
 hostLabel: 'Host'
 presenterLabel: 'Presenter'
@@ -94,5 +95,8 @@ resetPlayersButton: 'Reset Players'
 
 cheatDiscussionHint: ' Before starting a new round, feel free to discuss with players to determine who might be cheating.'
 
+minimalBetLabel: 'Minimal bet'
+
 startingGold: 100
 bettingPhaseDuration: 120000
+minimalBet: 1

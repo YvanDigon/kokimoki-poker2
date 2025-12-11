@@ -159,14 +159,12 @@ export const BettingPhaseView: React.FC = () => {
 					</div>
 				)}
 
-				{/* Cards */}
-				<div className="rounded-lg border-2 border-green-600 bg-white p-6 shadow-lg">
-					<div className="mb-4 flex items-center justify-between">
-						<h3 className="font-bold">{config.yourCards}</h3>
-						<HandRankingsModal />
-					</div>
-
-					{/* Hand Quality */}
+			{/* Cards */}
+			<div className="rounded-lg border-2 border-green-600 bg-white p-6 shadow-lg">
+				<div className="mb-4 flex items-center justify-between">
+					<h3 className="font-bold">{config.yourCards}</h3>
+					<HandRankingsModal currentCards={myPlayer.cards} />
+				</div>					{/* Hand Quality */}
 					{(() => {
 						const isDuplicate = hasDuplicateCards(myPlayer.cards);
 						if (isDuplicate) {
@@ -276,14 +274,12 @@ export const BettingPhaseView: React.FC = () => {
 			</div>
 		)}
 
-		{/* Cards */}
-		<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
-				<div className="mb-4 flex items-center justify-between">
-					<h3 className="font-bold">{config.yourCards}</h3>
-					<HandRankingsModal />
-				</div>
-
-				{/* Hand Quality */}
+	{/* Cards */}
+	<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
+			<div className="mb-4 flex items-center justify-between">
+				<h3 className="font-bold">{config.yourCards}</h3>
+				<HandRankingsModal currentCards={myPlayer.cards} />
+			</div>				{/* Hand Quality */}
 				{(() => {
 					const isDuplicate = hasDuplicateCards(myPlayer.cards);
 					if (isDuplicate) {
@@ -358,6 +354,10 @@ export const BettingPhaseView: React.FC = () => {
 					<div className="flex justify-between text-lg">
 						<span>{config.yourGold}:</span>
 						<span className="font-bold text-green-600">{myPlayer.gold}</span>
+					</div>
+					<div className="flex justify-between text-lg">
+						<span>{config.minimalBetLabel}:</span>
+						<span className="font-bold">{config.minimalBet}</span>
 					</div>
 					<div className="flex justify-between text-lg">
 						<span>{config.pot}:</span>

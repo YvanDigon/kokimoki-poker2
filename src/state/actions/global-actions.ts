@@ -46,6 +46,19 @@ export const globalActions = {
 			}
 
 			globalState.remainingDeck = fullDeck;
+			
+			// Deduct minimal bet from all players and add to pot
+			for (const playerId of playerIds) {
+				const player = globalState.players[playerId];
+				if (player.gold >= config.minimalBet) {
+					player.gold -= config.minimalBet;
+					globalState.pot += config.minimalBet;
+				} else {
+					// Player doesn't have enough gold for minimal bet, take what they have
+					globalState.pot += player.gold;
+					player.gold = 0;
+				}
+			}
 		});
 	},
 
@@ -124,6 +137,19 @@ export const globalActions = {
 			globalState.players[playerId].wronglyAccused = false;
 			globalState.players[playerId].receivedRedistributedGold = false;
 		}			globalState.remainingDeck = fullDeck;
+			
+			// Deduct minimal bet from all remaining players and add to pot
+			for (const playerId of remainingPlayers) {
+				const player = globalState.players[playerId];
+				if (player.gold >= config.minimalBet) {
+					player.gold -= config.minimalBet;
+					globalState.pot += config.minimalBet;
+				} else {
+					// Player doesn't have enough gold for minimal bet, take what they have
+					globalState.pot += player.gold;
+					player.gold = 0;
+				}
+			}
 		});
 	},
 

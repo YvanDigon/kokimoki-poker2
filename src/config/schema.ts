@@ -27,6 +27,7 @@ export const schema = z.object({
 	playerNameLabel: z.string().default('Name:'),
 	playerNameButton: z.string().default('Continue'),
 	randomNameButton: z.string().default('Random Name'),
+	dontCheatHelpText: z.string().default('Be a good boy, don\'t cheat. Don\'t try to figure out how to cheat.'),
 
 	hostLabel: z.string().default('Host'),
 	presenterLabel: z.string().default('Presenter'),
@@ -96,9 +97,12 @@ export const schema = z.object({
 			'Before starting a new round, feel free to discuss with players to determine who might be cheating.'
 		),
 	
+	minimalBetLabel: z.string().default('Minimal bet'),
+	
 	// Game settings
 	startingGold: z.number().default(100),
-	bettingPhaseDuration: z.number().default(120000)
+	bettingPhaseDuration: z.number().default(120000),
+	minimalBet: z.number().default(1)
 });
 
 export type Config = z.infer<typeof schema>;

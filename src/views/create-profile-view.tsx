@@ -76,6 +76,9 @@ export const CreateProfileView: React.FC<Props> = ({ className }) => {
 							config.playerNameButton
 						)}
 					</button>
+					<p className="text-xs text-center text-gray-600 mt-2">
+						{config.dontCheatHelpText}
+					</p>
 				</form>
 			</div>
 		</div>
