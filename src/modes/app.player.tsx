@@ -4,13 +4,15 @@ import { config } from '@/config';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useGlobalController } from '@/hooks/useGlobalController';
 import { PlayerLayout } from '@/layouts/player';
+import { kmClient } from '@/services/km-client';
 import { playerActions } from '@/state/actions/player-actions';
 import { globalStore } from '@/state/stores/global-store';
 import { playerStore } from '@/state/stores/player-store';
+import { BettingPhaseView } from '@/views/betting-phase-view';
 import { ConnectionsView } from '@/views/connections-view';
 import { CreateProfileView } from '@/views/create-profile-view';
 import { GameLobbyView } from '@/views/game-lobby-view';
-import { SharedStateView } from '@/views/shared-state-view';
+import { ResultsView } from '@/views/results-view';
 import { KmModalProvider } from '@kokimoki/shared';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
@@ -18,19 +20,30 @@ import { useSnapshot } from 'valtio';
 const App: React.FC = () => {
 	const { title } = config;
 	const { name, currentView } = useSnapshot(playerStore.proxy);
-	const { started } = useSnapshot(globalStore.proxy);
+	const { started, phase, players } = useSnapshot(globalStore.proxy);
 
 	useGlobalController();
 	useDocumentTitle(title);
 
 	React.useEffect(() => {
-		// While game start, force view to 'shared-state', otherwise to 'lobby'
+		// Update view based on game phase
 		if (started) {
-			playerActions.setCurrentView('shared-state');
+			if (phase === 'betting') {
+				playerActions.setCurrentView('betting');
+			} else if (phase === 'results' || phase === 'ended') {
+				playerActions.setCurrentView('results');
+			}
 		} else {
 			playerActions.setCurrentView('lobby');
 		}
-	}, [started]);
+	}, [started, phase]);
+
+	React.useEffect(() => {
+		// If player has been removed from global players list, clear local name
+		if (name && !players[kmClient.id]) {
+			playerActions.clearPlayerName();
+		}
+	}, [players, name]);
 
 	if (!name) {
 		return (
@@ -65,18 +78,20 @@ const App: React.FC = () => {
 	}
 
 	return (
-		<PlayerLayout.Root>
-			<PlayerLayout.Header />
+		<KmModalProvider>
+			<PlayerLayout.Root>
+				<PlayerLayout.Header />
 
-			<PlayerLayout.Main>
-				{currentView === 'shared-state' && <SharedStateView />}
-				{/* Add new views here */}
-			</PlayerLayout.Main>
+				<PlayerLayout.Main>
+					{currentView === 'betting' && <BettingPhaseView />}
+					{currentView === 'results' && <ResultsView />}
+				</PlayerLayout.Main>
 
-			<PlayerLayout.Footer>
-				<NameLabel name={name} />
-			</PlayerLayout.Footer>
-		</PlayerLayout.Root>
+				<PlayerLayout.Footer>
+					<NameLabel name={name} />
+				</PlayerLayout.Footer>
+			</PlayerLayout.Root>
+		</KmModalProvider>
 	);
 };
 

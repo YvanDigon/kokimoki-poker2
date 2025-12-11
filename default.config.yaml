@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./.kokimoki/schema.json
 
 # Translations
-title: 'Host Starter'
+title: 'Kokimoki Poker'
 
 gameLobbyMd: |
   # Waiting for game to start...
@@ -28,6 +28,7 @@ playerNameTitle: 'Enter Your Name'
 playerNamePlaceholder: 'Your name...'
 playerNameLabel: 'Name:'
 playerNameButton: 'Continue'
+randomNameButton: 'Random Name'
 
 hostLabel: 'Host'
 presenterLabel: 'Presenter'
@@ -37,3 +38,61 @@ playerLinkLabel: 'Player Link'
 presenterLinkLabel: 'Presenter Link'
 
 menuAriaLabel: 'Open menu drawer'
+
+# Poker-specific
+bettingPhaseTitle: 'Betting Phase'
+resultsTitle: 'Round Results'
+roundNumber: 'Round'
+yourCards: 'Your Cards'
+yourGold: 'Your Gold'
+currentBet: 'Current Bet'
+pot: 'Pot'
+timeRemaining: 'Time Remaining'
+
+selectCardsToChange: 'Select cards to change (tap to select)'
+cardsSelected: 'cards selected'
+changeCardsButton: 'Change Cards'
+cardsChanged: 'Cards changed! You can now place your bet.'
+placeBetButton: 'Place Bet'
+foldButton: 'Fold'
+allIn: 'ALL IN'
+
+youWon: 'You Won!'
+youLost: 'You Lost'
+youFolded: 'You Folded'
+winnings: 'Winnings'
+losses: 'Losses'
+
+handRankingsTitle: 'Poker Hand Rankings'
+viewHandRankings: 'View Hand Rankings'
+
+startGameButton: 'Start Game'
+endBettingButton: 'End Betting Phase'
+newRoundButton: 'Start New Round'
+endGameButton: 'End Game'
+startNewGameButton: 'Start New Game'
+
+gameOver: 'Game Over'
+gameOverMd: 'You ran out of gold! Better luck next time.'
+rejoinButton: 'Rejoin Game'
+
+redistributedGoldTitle: 'Bonus Gold'
+redistributedGoldMessage: 'You received part of the gold redistributed from caught cheaters!'
+foldedNoGoldMessage: 'Cheater(s) were caught and punished. You received nothing because you folded or did not bet.'
+
+denounceCheaters: 'Denounce Cheaters'
+denounceExplainer: 'If you suspect one or more players of cheating, use this'
+denounceTitle: 'Select Suspected Cheaters'
+denounceConfirm: 'Confirm'
+denounceCancel: 'Cancel'
+
+botchedCheatingMessage: 'You botched your cheating attempt! You got a duplicate card.'
+
+finalRankingsTitle: 'Final Rankings'
+winner: 'Winner'
+resetPlayersButton: 'Reset Players'
+
+cheatDiscussionHint: ' Before starting a new round, feel free to discuss with players to determine who might be cheating.'
+
+startingGold: 100
+bettingPhaseDuration: 120000

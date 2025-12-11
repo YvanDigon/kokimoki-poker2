@@ -1,10 +1,11 @@
+import { HostControls } from '@/components/host-controls';
 import { config } from '@/config';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useGlobalController } from '@/hooks/useGlobalController';
 import { generateLink } from '@/kit/generate-link';
 import { HostPresenterLayout } from '@/layouts/host-presenter';
 import { kmClient } from '@/services/km-client';
-import { SharedStateView } from '@/views/shared-state-view';
+import { ConnectionsView } from '@/views/connections-view';
 import { KmQrCode } from '@kokimoki/shared';
 import * as React from 'react';
 
@@ -59,7 +60,9 @@ const App: React.FC = () => {
 					</div>
 				</div>
 
-				<SharedStateView />
+				<HostControls />
+
+				<ConnectionsView />
 			</HostPresenterLayout.Main>
 		</HostPresenterLayout.Root>
 	);

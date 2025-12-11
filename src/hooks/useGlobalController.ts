@@ -35,9 +35,19 @@ export function useGlobalController() {
 			return;
 		}
 
-		// Global controller-specific logic goes here
-		// For example, a time-based event that modifies the global state
-		// All global controller logic does not need to be time-based
+		// Auto-end betting phase when time runs out
+		const checkBettingPhase = async () => {
+			const state = globalStore.proxy;
+			if (state.started && state.phase === 'betting') {
+				const bettingTimeElapsed = serverTime - state.bettingPhaseStartTime;
+				if (bettingTimeElapsed >= 60000) { // 60 seconds
+					const { globalActions } = await import('@/state/actions/global-actions');
+					await globalActions.endBettingPhase();
+				}
+			}
+		};
+
+		checkBettingPhase();
 	}, [isGlobalController, serverTime]);
 
 	return isGlobalController;

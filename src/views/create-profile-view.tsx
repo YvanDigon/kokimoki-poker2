@@ -1,6 +1,7 @@
 import { config } from '@/config';
 import { playerActions } from '@/state/actions/player-actions';
 import { cn } from '@/utils/cn';
+import { generateRandomCardName } from '@/utils/card-utils';
 import * as React from 'react';
 
 interface Props {
@@ -28,6 +29,10 @@ export const CreateProfileView: React.FC<Props> = ({ className }) => {
 		}
 	};
 
+	const handleRandomName = () => {
+		setName(generateRandomCardName());
+	};
+
 	return (
 		<div
 			className={cn(
@@ -50,6 +55,13 @@ export const CreateProfileView: React.FC<Props> = ({ className }) => {
 							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 					</label>
+					<button
+						type="button"
+						onClick={handleRandomName}
+						className="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 font-medium"
+					>
+						{config.randomNameButton}
+					</button>
 					<button
 						type="submit"
 						className="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 font-medium disabled:opacity-50 disabled:cursor-not-allowed"

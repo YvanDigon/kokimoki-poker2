@@ -5,11 +5,15 @@ import { generateLink } from '@/kit/generate-link';
 import { HostPresenterLayout } from '@/layouts/host-presenter';
 import { kmClient } from '@/services/km-client';
 import { ConnectionsView } from '@/views/connections-view';
+import { PresenterGameView } from '@/views/presenter-game-view';
+import { globalStore } from '@/state/stores/global-store';
 import { KmQrCode } from '@kokimoki/shared';
 import * as React from 'react';
+import { useSnapshot } from 'valtio';
 
 const App: React.FC = () => {
 	const { title } = config;
+	const { started } = useSnapshot(globalStore.proxy);
 
 	useGlobalController();
 	useDocumentTitle(title);
@@ -30,22 +34,20 @@ const App: React.FC = () => {
 
 			<HostPresenterLayout.Main>
 				<div className="rounded-lg border border-gray-200 bg-white shadow-md">
-					<div className="flex flex-col gap-2 p-6">
-						<h2 className="text-xl font-bold">{config.playerLinkLabel}</h2>
+				<div className="flex items-center gap-6 p-6">
+					<div className="flex-shrink-0">
 						<KmQrCode data={playerLink} size={200} interactive={false} />
-
-						<a
-							href={playerLink}
-							target="_blank"
-							rel="noreferrer"
-							className="break-all text-blue-600 underline hover:text-blue-700"
-						>
-							{config.playerLinkLabel}
-						</a>
+					</div>
+					<div className="flex-1">
+						<h1 className="text-6xl font-bold">{config.title}</h1>
+						<p className="mt-2 text-xl font-semibold text-red-600">
+							⚠️ Cheating is forbidden! Get caught and face the consequences! 🎭
+						</p>
 					</div>
 				</div>
+				</div>
 
-				<ConnectionsView />
+				{started ? <PresenterGameView /> : <ConnectionsView />}
 			</HostPresenterLayout.Main>
 		</HostPresenterLayout.Root>
 	);

@@ -10,7 +10,7 @@ interface LayoutProps {
 const PlayerRoot: React.FC<LayoutProps> = ({ children, className }) => (
 	<main
 		className={cn(
-			'bg-slate-100 grid min-h-dvh grid-rows-[auto_1fr_auto]',
+			'bg-poker-green grid min-h-dvh grid-rows-[auto_1fr_auto]',
 			className
 		)}
 	>
