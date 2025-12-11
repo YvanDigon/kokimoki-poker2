@@ -1,4 +1,4 @@
-# Kokimoki Poker - Game Specification
+# Red Handed Poker - Game Specification
 
 ## Overview
 A multiplayer 5-card draw poker game with betting phases, card changing mechanics, hand rankings, and casino-themed UI.
@@ -62,7 +62,7 @@ A multiplayer 5-card draw poker game with betting phases, card changing mechanic
 - QR code and links for joining
 
 ### Presenter Mode (Large Screen)
-- Large "Kokimoki Poker" title with QR code
+- Large "Red Handed Poker" title with QR code
 - Real-time display of all players
 - 3-column grid layout during results
 - Shows player bets, hands, and winners

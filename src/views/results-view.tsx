@@ -87,7 +87,7 @@ export const ResultsView: React.FC = () => {
 					<h3 className={`mb-2 text-center text-xl font-bold ${
 						myPlayer.wronglyAccused ? 'text-green-600' : 'text-red-600'
 					}`}>
-						{myPlayer.wronglyAccused ? '✓ Wrongly Accused!' : '⚠️ Caught Cheating!'}
+						{myPlayer.wronglyAccused ? '💢 Wrongly Accused!' : '⚠️ Caught Cheating!'}
 					</h3>
 					<p className="text-center">
 						{myPlayer.wronglyAccused

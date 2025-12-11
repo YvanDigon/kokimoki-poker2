@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 
 export const schema = z.object({
 	// translations
-	title: z.string().default('Kokimoki Poker'),
+	title: z.string().default('Red Handed Poker'),
 
 	gameLobbyMd: z
 		.string()

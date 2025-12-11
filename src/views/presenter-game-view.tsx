@@ -149,10 +149,10 @@ export const PresenterGameView: React.FC = () => {
 									<div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 ${
 										player.wronglyAccused
 											? 'bg-green-500 text-white'
-											: 'bg-orange-500 text-white'
-									}`}>
-										{player.wronglyAccused ? '✓' : '⚠'}
-									</div>
+										: 'bg-orange-500 text-white'
+								}`}>
+									{player.wronglyAccused ? '💢' : '⚠'}
+								</div>
 								)}
 								{!wasAccused && isWinner && (
 									<div className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500 text-xs font-bold text-white flex-shrink-0">
@@ -173,6 +173,14 @@ export const PresenterGameView: React.FC = () => {
 									</span>
 								</div>
 							)}
+							
+						{wasAccused && player.wronglyAccused && (
+							<div className="mt-1 text-center">
+								<span className="text-xs font-bold text-green-600">
+									💢 WRONGLY ACCUSED
+								</span>
+							</div>
+						)}
 						</div>								<div className="mb-1 text-center text-xs flex items-center justify-center gap-1">
 									<span>{config.yourGold}: <span className="font-bold">{player.gold}</span></span>
 									<span>{getGoldEmoji(player.gold)}</span>

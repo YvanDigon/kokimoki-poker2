@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./.kokimoki/schema.json
 
 # Translations
-title: 'Kokimoki Poker'
+title: 'Red Handed Poker'
 
 gameLobbyMd: |
   # Waiting for game to start...
