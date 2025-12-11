@@ -64,8 +64,12 @@ youFolded: 'You Folded'
 winnings: 'Winnings'
 losses: 'Losses'
 
+rulesTitle: 'RULES'
+gameRulesDescription: 'Each round, players receive 5 cards and place bets. At the end of the betting phase, the player with the best hand wins the pot (the sum of all bets).'
 handRankingsTitle: 'Poker Hand Rankings'
-viewHandRankings: 'View Hand Rankings'
+viewHandRankings: 'Rules'
+importantNoteTitle: 'Important Note'
+importantNoteText: 'It''s forbidden to cheat. Don''t try to figure out how to cheat. Be a good boy!'
 
 startGameButton: 'Start Game'
 endBettingButton: 'End Betting Phase'

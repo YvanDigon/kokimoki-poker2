@@ -62,8 +62,12 @@ export const schema = z.object({
 	winnings: z.string().default('Winnings'),
 	losses: z.string().default('Losses'),
 	
+	rulesTitle: z.string().default('RULES'),
+	gameRulesDescription: z.string().default('Each round, players receive 5 cards and place bets. At the end of the betting phase, the player with the best hand wins the pot (the sum of all bets).'),
 	handRankingsTitle: z.string().default('Poker Hand Rankings'),
-	viewHandRankings: z.string().default('View Hand Rankings'),
+	viewHandRankings: z.string().default('Rules'),
+	importantNoteTitle: z.string().default('Important Note'),
+	importantNoteText: z.string().default('It\'s forbidden to cheat. Don\'t try to figure out how to cheat. Be a good boy!'),
 	
 	startGameButton: z.string().default('Start Game'),
 	endBettingButton: z.string().default('End Betting Phase'),

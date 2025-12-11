@@ -1,4 +1,5 @@
 import { config } from '@/config';
+import { HandRankingsModal } from '@/components/hand-rankings-modal';
 import { cn } from '@/utils/cn';
 import React from 'react';
 import Markdown from 'react-markdown';
@@ -23,6 +24,9 @@ export const GameLobbyView: React.FC<React.PropsWithChildren<Props>> = ({
 		>
 			<div className="p-6 prose">
 				<Markdown>{config.gameLobbyMd}</Markdown>
+			</div>
+			<div className="p-4 border-t border-gray-200 flex justify-center">
+				<HandRankingsModal />
 			</div>
 		</div>
 	);

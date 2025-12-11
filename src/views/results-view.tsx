@@ -1,5 +1,6 @@
 import { config } from '@/config';
 import { DenounceCheaterModal } from '@/components/denounce-cheaters-modal';
+import { HandRankingsModal } from '@/components/hand-rankings-modal';
 import { PlayingCard } from '@/components/playing-card';
 import { kmClient } from '@/services/km-client';
 import { playerActions } from '@/state/actions/player-actions';
@@ -169,6 +170,11 @@ export const ResultsView: React.FC = () => {
 						<span>{config.yourGold}: <span className="text-green-600">{myGold}</span></span>
 						{myGold > 0 && <span>{getGoldEmoji(myGold)}</span>}
 					</p>
+				</div>
+				
+				{/* Rules Button */}
+				<div className="pt-2 flex justify-center">
+					<HandRankingsModal currentCards={myPlayer.cards} />
 				</div>
 			</div>
 

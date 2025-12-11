@@ -24,7 +24,14 @@ const HandRankingsContent: React.FC<HandRankingsContentProps> = ({ currentCards 
 	const currentHandRank = currentCards ? evaluateHand(currentCards).rank : null;
 
 	return (
-		<div className="max-h-[70vh] overflow-y-auto space-y-3 pr-2">
+		<div className="max-h-[70vh] overflow-y-auto space-y-4 pr-2">
+			{/* Game Rules Description */}
+			<div className="rounded-lg bg-blue-50 border-2 border-blue-300 p-4">
+				<p className="text-sm text-gray-800">{config.gameRulesDescription}</p>
+			</div>
+			
+			{/* Poker Hand Rankings Title */}
+			<h3 className="text-lg font-bold text-center pt-2">{config.handRankingsTitle}</h3>
 			{handRankings.map((hand) => {
 				const isCurrentHand = currentHandRank === hand.rank;
 				
@@ -52,6 +59,12 @@ const HandRankingsContent: React.FC<HandRankingsContentProps> = ({ currentCards 
 					</div>
 				);
 			})}
+			
+			{/* Important Note */}
+			<div className="rounded-lg bg-red-50 border-2 border-red-300 p-4 mt-4">
+				<h3 className="text-sm font-bold text-red-800 mb-2">{config.importantNoteTitle}</h3>
+				<p className="text-sm text-red-700">{config.importantNoteText}</p>
+			</div>
 		</div>
 	);
 };
@@ -65,7 +78,7 @@ export const HandRankingsModal: React.FC<HandRankingsModalProps> = ({ currentCar
 
 	const handleOpen = () => {
 		openDialog({
-			title: config.handRankingsTitle,
+			title: config.rulesTitle,
 			content: <HandRankingsContent currentCards={currentCards} />
 		});
 	};
