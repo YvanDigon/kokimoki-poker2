@@ -48,7 +48,6 @@ const App: React.FC = () => {
 	if (!name) {
 		return (
 			<PlayerLayout.Root>
-				<PlayerLayout.Header />
 				<PlayerLayout.Main>
 					<CreateProfileView />
 				</PlayerLayout.Main>
@@ -60,10 +59,6 @@ const App: React.FC = () => {
 		return (
 			<KmModalProvider>
 				<PlayerLayout.Root>
-					<PlayerLayout.Header>
-						<PlayerMenu />
-					</PlayerLayout.Header>
-
 					<PlayerLayout.Main>
 						{currentView === 'lobby' && <GameLobbyView />}
 						{currentView === 'connections' && <ConnectionsView />}
@@ -80,8 +75,6 @@ const App: React.FC = () => {
 	return (
 		<KmModalProvider>
 			<PlayerLayout.Root>
-				<PlayerLayout.Header />
-
 				<PlayerLayout.Main>
 					{currentView === 'betting' && <BettingPhaseView />}
 					{currentView === 'results' && <ResultsView />}

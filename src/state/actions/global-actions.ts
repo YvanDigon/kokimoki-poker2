@@ -15,6 +15,7 @@ export const globalActions = {
 			globalState.winners = [];
 			globalState.bettingPhaseStartTime = kmClient.serverTimestamp();
 			globalState.punishmentUsedThisRound = false;
+		globalState.losingPlayersLastRound = [];
 
 		// Initialize player data with starting gold
 		const playerIds = Object.keys(globalState.players);
@@ -30,9 +31,18 @@ export const globalActions = {
 				cheated: false,
 				accusedOfCheating: false,
 				wronglyAccused: false,
-				receivedRedistributedGold: false
+				receivedRedistributedGold: false,
+				changedCards: false,
+				receivedEliminationBonus: false,
+				refreshCount: 0,
+				botchedCheating: false,
+				muggedVictimId: '',
+				muggedAmount: 0,
+				hasMugged: false
 			};
-		}			// Create and shuffle deck (1 deck per 10 players)
+		}
+
+			// Create and shuffle deck (1 deck per 10 players)
 			const numDecks = Math.ceil(playerIds.length / 10);
 			let fullDeck: Card[] = [];
 			for (let i = 0; i < numDecks; i++) {
@@ -64,41 +74,40 @@ export const globalActions = {
 
 	async startNewRound() {
 		await kmClient.transact([globalStore], ([globalState]) => {
-			// Find worst performer from previous round (only among players who placed bets)
+			// Find all players who bet but didn't win (losing players)
 			const playersWhoBet = Object.entries(globalState.players).filter(
 				([_, p]) => !p.folded && p.bet > 0 && p.handRank > 0
 			);
 			
-			console.log('[startNewRound] Players who bet:', playersWhoBet.map(([id, p]) => ({
+			console.log('[startNewRound] All players who bet:', playersWhoBet.map(([id, p]) => ({
 				id,
 				name: p.name,
 				bet: p.bet,
 				folded: p.folded,
 				handRank: p.handRank,
-				handName: p.handName
+				isWinner: globalState.winners.includes(id)
 			})));
 			
-			if (playersWhoBet.length > 1) {
-				const lowestRank = Math.min(...playersWhoBet.map(([_, p]) => p.handRank));
-				const playersWithLowestRank = playersWhoBet.filter(
-					([_, p]) => p.handRank === lowestRank
-				);
-				
-				console.log('[startNewRound] Lowest rank:', lowestRank);
-				console.log('[startNewRound] Players with lowest rank:', playersWithLowestRank.map(([id, p]) => ({
-					id,
-					name: p.name,
-					handRank: p.handRank
-				})));
-				
-				// If tied for worst, pick one randomly
-				const randomIndex = Math.floor(Math.random() * playersWithLowestRank.length);
-				globalState.worstPerformerLastRound = playersWithLowestRank[randomIndex][0];
-				console.log('[startNewRound] Worst performer set to:', playersWithLowestRank[randomIndex][0], playersWithLowestRank[randomIndex][1].name, playersWithLowestRank.length > 1 ? '(randomly selected from tie)' : '');
-			} else {
-				globalState.worstPerformerLastRound = '';
-				console.log('[startNewRound] Not enough players who bet:', playersWhoBet.length);
-			}
+			console.log('[startNewRound] Winners:', globalState.winners);
+			
+			// Get all losing players (who bet but are not winners)
+			const losingPlayers = playersWhoBet
+				.filter(([id, _]) => !globalState.winners.includes(id))
+				.map(([id, _]) => id);
+			
+			// Filter out any eliminated players from losing players list
+			const remainingLosingPlayers = losingPlayers.filter(id => {
+				const player = globalState.players[id];
+				return player && player.gold > 0;
+			});
+			
+			globalState.losingPlayersLastRound = remainingLosingPlayers;
+			
+			console.log('[startNewRound] Losing players (will see cheat tip):', remainingLosingPlayers.map(id => ({
+				id,
+				name: globalState.players[id]?.name,
+				gold: globalState.players[id]?.gold
+			})));
 
 		globalState.phase = 'betting';
 		globalState.roundNumber += 1;
@@ -136,6 +145,13 @@ export const globalActions = {
 			globalState.players[playerId].accusedOfCheating = false;
 			globalState.players[playerId].wronglyAccused = false;
 			globalState.players[playerId].receivedRedistributedGold = false;
+			globalState.players[playerId].changedCards = false;
+			globalState.players[playerId].receivedEliminationBonus = false;
+			globalState.players[playerId].refreshCount = 0;
+			globalState.players[playerId].botchedCheating = false;
+			globalState.players[playerId].muggedVictimId = '';
+			globalState.players[playerId].muggedAmount = 0;
+			globalState.players[playerId].hasMugged = false;
 		}			globalState.remainingDeck = fullDeck;
 			
 			// Deduct minimal bet from all remaining players and add to pot
@@ -161,6 +177,12 @@ export const globalActions = {
 			// Validate indices
 			if (cardIndices.length === 0 || cardIndices.length > 5) return;
 			if (cardIndices.some(idx => idx < 0 || idx >= 5)) return;
+
+			// Detect refresh-based cheating: if player already changed cards, increment refresh count
+			if (player.changedCards) {
+				player.cheated = true;
+				player.refreshCount += 1;
+			}
 
 			const numDecks = Math.ceil(Object.keys(globalState.players).length / 10);
 			const maxDuplicates = numDecks;
@@ -223,14 +245,55 @@ export const globalActions = {
 			// Create new hand by replacing selected cards
 			const newHand = [...player.cards];
 			
+			// If player refreshed 2+ times, force at least one duplicate card
+			const shouldForceDuplicate = player.refreshCount >= 2;
+			let duplicateForced = false;
+			
 			for (const index of cardIndices) {
-				const newCard = drawValidCard(newHand);
+				let newCard: Card | null = null;
+				
+				// Force duplicate on first card change if refresh count >= 2
+				if (shouldForceDuplicate && !duplicateForced && newHand.length > 1) {
+					// Pick a random card from their current hand to duplicate
+					const availableCards = newHand.filter((_, idx) => idx !== index);
+					if (availableCards.length > 0) {
+						const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+						newCard = { ...randomCard };
+						duplicateForced = true;
+						console.log('[changeCards] Forced duplicate card due to multiple refreshes:', newCard);
+					}
+				}
+				
+				// Draw normal card if no duplicate forced
+				if (!newCard) {
+					newCard = drawValidCard(newHand);
+				}
+				
 				if (newCard) {
 					newHand[index] = newCard;
 				}
 			}
 
 			player.cards = newHand;
+			player.changedCards = true;
+			
+			// If duplicate was forced, automatically place bet and mark as botched
+			if (duplicateForced) {
+				player.botchedCheating = true;
+				
+				// Place random bet between 5 and 50% of gold (rounded to multiple of 5)
+				const halfGold = Math.ceil(player.gold / 2);
+				const maxBet = Math.floor(halfGold / 5) * 5;
+				if (maxBet >= 5) {
+					const minBet = 5;
+					const numOptions = Math.floor((maxBet - minBet) / 5) + 1;
+					const randomBet = minBet + (Math.floor(Math.random() * numOptions) * 5);
+					player.bet = Math.min(randomBet, player.gold);
+				} else if (player.gold > 0) {
+					// If less than 5 gold, bet all
+					player.bet = player.gold;
+				}
+			}
 		});
 	},
 
@@ -257,14 +320,31 @@ export const globalActions = {
 
 	async endBettingPhase() {
 		await kmClient.transact([globalStore], ([globalState]) => {
-			// Calculate pot
-			let totalPot = 0;
+			// Process muggings first (transfer gold from victims to muggers)
+			for (const muggerId of Object.keys(globalState.players)) {
+				const mugger = globalState.players[muggerId];
+				if (mugger.muggedVictimId && mugger.hasMugged) {
+					const victim = globalState.players[mugger.muggedVictimId];
+					if (victim) {
+						const stolenAmount = mugger.bet; // Steal same amount as mugger's bet
+						victim.gold -= stolenAmount;
+						mugger.gold += stolenAmount;
+						victim.muggedAmount = stolenAmount;
+						
+						// Mark mugger as cheater
+						mugger.cheated = true;
+					}
+				}
+			}
+			
+			// Calculate pot (add bets to existing pot which already has minimal bets)
+			let totalBets = 0;
 			for (const playerId of Object.keys(globalState.players)) {
 				const player = globalState.players[playerId];
-				totalPot += player.bet;
+				totalBets += player.bet;
 				player.gold -= player.bet;
 			}
-			globalState.pot = totalPot;
+			globalState.pot += totalBets; // Add to existing pot instead of replacing
 
 			// Evaluate hands for non-folded players
 			const activePlayers: { id: string; eval: ReturnType<typeof evaluateHand> }[] = [];
@@ -292,7 +372,7 @@ export const globalActions = {
 				}
 
 				// Distribute pot
-				const winnings = Math.floor(totalPot / winners.length);
+				const winnings = Math.floor(globalState.pot / winners.length);
 				for (const winnerId of winners) {
 					globalState.players[winnerId].gold += winnings;
 				}
@@ -300,18 +380,55 @@ export const globalActions = {
 				globalState.winners = winners;
 			}
 
-			globalState.phase = 'results';
-		});
-	},
+		// Check for eliminated players (0 gold) and distribute elimination bonus
+		const eliminatedPlayers = Object.keys(globalState.players).filter(
+			playerId => globalState.players[playerId].gold <= 0
+		);
 
-	async endGame() {
-		await kmClient.transact([globalStore], ([globalState]) => {
-			globalState.phase = 'ended';
-		});
-	},
+		console.log('[endBettingPhase] Eliminated players:', eliminatedPlayers.map(id => ({
+			id,
+			name: globalState.players[id]?.name,
+			gold: globalState.players[id]?.gold
+		})));
 
-	async startNewGame() {
-		await kmClient.transact([globalStore], ([globalState]) => {
+		if (eliminatedPlayers.length > 0) {
+			// Get all players who bet this round (not folded, not eliminated)
+			const bettingPlayers = Object.keys(globalState.players).filter(
+				playerId => {
+					const player = globalState.players[playerId];
+					return !player.folded && player.bet > 0 && !eliminatedPlayers.includes(playerId);
+				}
+			);
+
+			console.log('[endBettingPhase] Players receiving elimination bonus:', bettingPlayers.map(id => ({
+				id,
+				name: globalState.players[id]?.name,
+				folded: globalState.players[id]?.folded,
+				bet: globalState.players[id]?.bet
+			})));
+
+			// Give elimination bonus to each betting player for each eliminated player
+			const bonusPerElimination = config.eliminationBonus;
+			const totalBonus = bonusPerElimination * eliminatedPlayers.length;
+
+			for (const playerId of bettingPlayers) {
+				globalState.players[playerId].gold += totalBonus;
+				globalState.players[playerId].receivedEliminationBonus = true;
+			}
+		}
+
+		globalState.phase = 'results';
+	});
+},
+
+async endGame() {
+	await kmClient.transact([globalStore], ([globalState]) => {
+		globalState.phase = 'ended';
+	});
+},
+
+async startNewGame() {
+	await kmClient.transact([globalStore], ([globalState]) => {
 			// Reset to lobby state while keeping player names
 			globalState.started = false;
 			globalState.startTimestamp = 0;
@@ -507,6 +624,16 @@ async denounceCheaters(accuserId: string, suspectedPlayerIds: string[]) {
 async clearSuspicions() {
 	await kmClient.transact([globalStore], ([globalState]) => {
 		globalState.suspectedCheaters = {};
+	});
+},
+
+async executeMug(muggerId: string, victimId: string) {
+	await kmClient.transact([globalStore], ([globalState]) => {
+		const mugger = globalState.players[muggerId];
+		if (!mugger || mugger.hasMugged) return;
+		
+		mugger.muggedVictimId = victimId;
+		mugger.hasMugged = true;
 	});
 }
 };

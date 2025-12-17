@@ -1,9 +1,10 @@
 import { config } from '@/config';
 import { PlayingCard } from '@/components/playing-card';
 import { useServerTimer } from '@/hooks/useServerTime';
+import { kmClient } from '@/services/km-client';
 import { globalStore } from '@/state/stores/global-store';
 import { getGoldEmoji } from '@/utils/gold-emoji';
-import { KmTimeProgress } from '@kokimoki/shared';
+import { KmTimeCountdown } from '@kokimoki/shared';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -12,11 +13,10 @@ export const PresenterGameView: React.FC = () => {
 	const serverTime = useServerTimer(250);
 
 	const playerEntries = Object.entries(players);
-
-	// Calculate elapsed time in betting phase - clamp to valid range
-	const bettingTimeElapsed = bettingPhaseStartTime > 0 
-		? Math.max(0, Math.min(serverTime - bettingPhaseStartTime, config.bettingPhaseDuration))
-		: 0;
+	
+	// Calculate remaining time in betting phase (same as host)
+	const bettingTimeElapsed = serverTime - bettingPhaseStartTime;
+	const bettingTimeRemaining = Math.max(0, config.bettingPhaseDuration * 1000 - bettingTimeElapsed);
 
 	if (phase === 'betting') {
 		return (
@@ -30,12 +30,10 @@ export const PresenterGameView: React.FC = () => {
 					{config.pot}: <span className="font-bold text-green-600">{pot}</span>
 				</p>
 				<div>
-					<p className="text-lg font-bold mb-2">{config.timeRemaining}</p>
-					<KmTimeProgress
-						value={bettingTimeElapsed}
-						limit={config.bettingPhaseDuration}
-						className="mx-auto max-w-md"
-					/>
+					<p className="text-lg font-bold mb-2">{config.timeRemaining}:</p>
+					<div className="text-4xl font-bold text-blue-600">
+						<KmTimeCountdown ms={bettingTimeRemaining} />
+					</div>
 				</div>
 			</div>				<div className="grid grid-cols-3 gap-3">
 					{playerEntries.map(([playerId, player]) => {
@@ -181,10 +179,19 @@ export const PresenterGameView: React.FC = () => {
 								</span>
 							</div>
 						)}
-						</div>								<div className="mb-1 text-center text-xs flex items-center justify-center gap-1">
+						</div>
+								
+								<div className="mb-1 text-center text-xs flex items-center justify-center gap-1">
 									<span>{config.yourGold}: <span className="font-bold">{player.gold}</span></span>
 									<span>{getGoldEmoji(player.gold)}</span>
 								</div>
+								
+								{!player.folded && player.bet > 0 && (
+									<div className="mb-1 text-center text-xs flex items-center justify-center gap-1">
+										<span>Bet: <span className="font-bold text-blue-600">{player.bet}</span></span>
+										<span>{getGoldEmoji(player.bet)}</span>
+									</div>
+								)}
 
 							{!player.folded && player.handName && (
 								<>

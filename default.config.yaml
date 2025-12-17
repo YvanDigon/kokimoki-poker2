@@ -40,7 +40,6 @@ presenterLinkLabel: 'Presenter Link'
 
 menuAriaLabel: 'Open menu drawer'
 
-# Poker-specific
 bettingPhaseTitle: 'Betting Phase'
 resultsTitle: 'Round Results'
 roundNumber: 'Round'
@@ -91,7 +90,21 @@ denounceTitle: 'Select Suspected Cheaters'
 denounceConfirm: 'Confirm'
 denounceCancel: 'Cancel'
 
-botchedCheatingMessage: 'You botched your cheating attempt! You got a duplicate card.'
+botchedCheatingMessage: '🚨 You''ve been caught red-handed! Your greedy card-swapping has backfired - you now have duplicate cards. Your bet has been automatically placed. Good luck explaining this to the other players!'
+
+cheatTipTitle: '😈 You lost money on the previous round, ha ha ha!'
+cheatTip1: |
+  Here's a friendly tip: There are 3 ways to cheat.
+
+  **Method 1:** Tap 4 times on any card to change it to your desired rank or suit. Warning: This will automatically place a random bet for you!
+cheatTip2: |
+  Here's a friendly tip: There are 3 ways to cheat.
+
+  **Method 2:** After placing your bet, tap 4 times on "Bet Placed!" to open a secret menu where you can mug another player and steal gold equal to your bet amount.
+cheatTip3: |
+  Here's a friendly tip: There are 3 ways to cheat.
+
+  **Method 3:** After changing cards but before betting, refresh your browser to change cards again. Beware: Do this twice and you'll get duplicate cards - instant cheater hand!
 
 finalRankingsTitle: 'Final Rankings'
 winner: 'Winner'
@@ -101,6 +114,13 @@ cheatDiscussionHint: ' Before starting a new round, feel free to discuss with pl
 
 minimalBetLabel: 'Minimal bet'
 
-startingGold: 100
-bettingPhaseDuration: 120000
-minimalBet: 1
+# Poker-specific settings
+bettingPhaseDuration: 180 # In seconds
+
+startingGold: 100 # The bet that each new player starts with
+minimalBet: 1 # The minimal value that each player bets in each betting phase, even when they fold
+
+betIncrementSmall: 5 # The value which the player can modify the bet, positively or negatively, during the betting phase
+betIncrementLarge: 25 # Same, but bigger value
+
+eliminationBonus: 10 # Gold bonus for players when another one gets game over

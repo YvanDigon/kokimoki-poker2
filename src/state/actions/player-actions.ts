@@ -40,7 +40,14 @@ export const playerActions = {
 					handName: '',
 					cheated: false,
 					accusedOfCheating: false,
-					wronglyAccused: false
+					wronglyAccused: false,
+					changedCards: false,
+					receivedEliminationBonus: false,
+					refreshCount: 0,
+					botchedCheating: false,
+					muggedVictimId: '',
+					muggedAmount: 0,
+					hasMugged: false
 				};
 			}
 		);
@@ -130,6 +137,34 @@ export const playerActions = {
 	async dismissCheatTip() {
 		await kmClient.transact([playerStore], ([playerState]) => {
 			playerState.showCheatTip = false;
+		});
+	},
+
+	async tapMugArea() {
+		await kmClient.transact([playerStore], ([playerState]) => {
+			playerState.mugTapCount += 1;
+			
+			console.log('[tapMugArea] Tap count:', playerState.mugTapCount);
+			
+			// If tapped 4 times, show mug selector and reset count
+			if (playerState.mugTapCount >= 4) {
+				playerState.showMugSelector = true;
+				playerState.mugTapCount = 0;
+				console.log('[tapMugArea] Showing mug selector');
+			}
+		});
+	},
+
+	async resetMugTaps() {
+		await kmClient.transact([playerStore], ([playerState]) => {
+			playerState.mugTapCount = 0;
+			playerState.showMugSelector = false;
+		});
+	},
+
+	async closeMugSelector() {
+		await kmClient.transact([playerStore], ([playerState]) => {
+			playerState.showMugSelector = false;
 		});
 	}
 };

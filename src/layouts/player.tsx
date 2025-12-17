@@ -10,7 +10,7 @@ interface LayoutProps {
 const PlayerRoot: React.FC<LayoutProps> = ({ children, className }) => (
 	<main
 		className={cn(
-			'bg-poker-green grid min-h-dvh grid-rows-[auto_1fr_auto]',
+			'bg-poker-green flex min-h-dvh flex-col',
 			className
 		)}
 	>
@@ -36,7 +36,7 @@ const PlayerHeader: React.FC<LayoutProps> = ({ children, className }) => (
 const PlayerMain: React.FC<LayoutProps> = ({ children, className }) => (
 	<main
 		className={cn(
-			'container mx-auto flex items-center justify-center p-4 lg:p-6',
+			'container mx-auto flex flex-1 items-center justify-center p-4 lg:p-6',
 			className
 		)}
 	>

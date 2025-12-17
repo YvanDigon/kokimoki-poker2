@@ -27,10 +27,11 @@ export const ResultsView: React.FC = () => {
 		p => p.accusedOfCheating && p.cheated
 	);
 
-	// Calculate winnings/losses
+	// Calculate winnings/losses (including minimal bet deducted at round start)
 	const myBet = myPlayer.bet;
+	const totalLost = myBet + config.minimalBet; // Total amount lost (bet + minimal bet)
 	const winnings = isWinner && !myPlayer.folded ? Math.floor(pot / winners.length) : 0;
-	const netChange = winnings - myBet;
+	const netChange = winnings - totalLost;
 
 	const handleRejoin = async () => {
 		await playerActions.rejoinGame();
@@ -74,14 +75,52 @@ export const ResultsView: React.FC = () => {
 				</div>
 			)}
 
-		{/* Folded/No Bet Notification - Show if punishment happened and at least one cheater was caught, but player didn't receive gold */}
-		{!myPlayer.receivedRedistributedGold && punishmentUsedThisRound && anyCheaterCaught && (myPlayer.folded || myPlayer.bet === 0) && (
-			<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
-				<p className="text-center text-gray-700">
-					{config.foldedNoGoldMessage}
-				</p>
-			</div>
-		)}			{/* Accusation Notification */}
+			{/* Folded/No Bet Notification - Show if punishment happened and at least one cheater was caught, but player didn't receive gold */}
+			{!myPlayer.receivedRedistributedGold && punishmentUsedThisRound && anyCheaterCaught && (myPlayer.folded || myPlayer.bet === 0) && (
+				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
+					<p className="text-center text-gray-700">
+						{config.foldedNoGoldMessage}
+					</p>
+				</div>
+			)}
+
+			{/* Elimination Bonus Notification */}
+			{myPlayer.receivedEliminationBonus && (
+				<div className="rounded-lg border-2 border-green-600 bg-green-50 p-6 shadow-lg">
+					<h3 className="mb-2 text-center text-xl font-bold text-green-600">
+						💰 Elimination Bonus!
+					</h3>
+					<p className="text-center text-green-700">
+						A rival went broke! You earned {config.eliminationBonus} coins as a survivor's reward for staying in the game!
+					</p>
+				</div>
+			)}
+
+			{/* Folded and Missed Elimination Bonus */}
+			{!myPlayer.receivedEliminationBonus && myPlayer.folded && Object.values(players).some(p => p.receivedEliminationBonus) && (
+				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
+					<h3 className="mb-2 text-center text-xl font-bold text-gray-600">
+						😔 Missed Opportunity
+					</h3>
+					<p className="text-center text-gray-700">
+						A player went broke, but you folded early and missed out on the 20 coin survivor's bonus. Stay in the game to reap the rewards!
+					</p>
+				</div>
+			)}
+
+			{/* Mugged Notification */}
+			{myPlayer.muggedAmount > 0 && (
+				<div className="rounded-lg border-2 border-red-600 bg-red-50 p-6 shadow-lg">
+					<h3 className="mb-2 text-center text-xl font-bold text-red-600">
+						🎭 You've Been Mugged!
+					</h3>
+					<p className="text-center text-red-700">
+						A mysterious player stole {myPlayer.muggedAmount} gold from you during the betting phase!
+					</p>
+				</div>
+			)}
+
+			{/* Accusation Notification */}
 			{wasAccused && (
 				<div className={`rounded-lg border-2 p-6 shadow-lg ${
 					myPlayer.wronglyAccused
@@ -96,7 +135,7 @@ export const ResultsView: React.FC = () => {
 					<p className="text-center">
 						{myPlayer.wronglyAccused
 							? 'You were wrongly accused! Your gold has been doubled.'
-							: 'You were caught cheating! Your gold has been halved.'}
+							: 'You were caught red-handed! Half your gold has been confiscated and redistributed to the honest players who stayed in the game.'}
 					</p>
 				</div>
 			)}
@@ -109,12 +148,10 @@ export const ResultsView: React.FC = () => {
 					{myPlayer.folded || myBet === 0 ? (
 						<>
 							<p className="text-xl font-bold text-gray-600">{config.youFolded}</p>
-							{myBet > 0 && (
-								<p className="mt-2 text-lg text-red-600 flex items-center justify-center gap-2">
-									<span>{config.losses}: -{myBet}</span>
-									{myBet > 0 && <span>{getGoldEmoji(myBet)}</span>}
-								</p>
-							)}
+							<p className="mt-2 text-lg text-red-600 flex items-center justify-center gap-2">
+								<span>{config.losses}: -{totalLost}</span>
+								{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
+							</p>
 						</>
 					) : isWinner ? (
 						<>
@@ -124,8 +161,8 @@ export const ResultsView: React.FC = () => {
 								{winnings > 0 && <span>{getGoldEmoji(winnings)}</span>}
 							</p>
 							<p className="text-lg flex items-center justify-center gap-2">
-								<span>{config.losses}: <span className="text-red-600">-{myBet}</span></span>
-								{myBet > 0 && <span>{getGoldEmoji(myBet)}</span>}
+								<span>{config.losses}: <span className="text-red-600">-{totalLost}</span></span>
+								{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
 							</p>
 							<p className="text-xl font-bold flex items-center justify-center gap-2">
 								<span>Net: <span className={netChange >= 0 ? 'text-green-600' : 'text-red-600'}>
@@ -137,12 +174,10 @@ export const ResultsView: React.FC = () => {
 					) : (
 						<>
 							<p className="mb-2 text-2xl font-bold text-red-600">{config.youLost}</p>
-							{myBet > 0 && (
-								<p className="text-lg text-red-600 flex items-center justify-center gap-2">
-									<span>{config.losses}: -{myBet}</span>
-									{myBet > 0 && <span>{getGoldEmoji(myBet)}</span>}
-								</p>
-							)}
+							<p className="text-lg text-red-600 flex items-center justify-center gap-2">
+								<span>{config.losses}: -{totalLost}</span>
+								{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
+							</p>
 						</>
 					)}
 				</div>

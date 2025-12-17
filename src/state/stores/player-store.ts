@@ -9,6 +9,8 @@ export interface PlayerState {
 	cheatCardIndex: number;
 	showCheatTip: boolean;
 	botchedCheating: boolean;
+	mugTapCount: number;
+	showMugSelector: boolean;
 }
 
 const initialState: PlayerState = {
@@ -19,7 +21,9 @@ const initialState: PlayerState = {
 	cheatMode: false,
 	cheatCardIndex: -1,
 	showCheatTip: false,
-	botchedCheating: false
+	botchedCheating: false,
+	mugTapCount: 0,
+	showMugSelector: false
 };
 
 export const playerStore = kmClient.localStore<PlayerState>(

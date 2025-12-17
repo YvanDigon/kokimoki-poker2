@@ -38,9 +38,10 @@ export function useGlobalController() {
 		// Auto-end betting phase when time runs out
 		const checkBettingPhase = async () => {
 			const state = globalStore.proxy;
-			if (state.started && state.phase === 'betting') {
+			if (state.started && state.phase === 'betting' && state.bettingPhaseStartTime > 0) {
+				const { config } = await import('@/config');
 				const bettingTimeElapsed = serverTime - state.bettingPhaseStartTime;
-				if (bettingTimeElapsed >= 60000) { // 60 seconds
+				if (bettingTimeElapsed >= config.bettingPhaseDuration * 1000) {
 					const { globalActions } = await import('@/state/actions/global-actions');
 					await globalActions.endBettingPhase();
 				}

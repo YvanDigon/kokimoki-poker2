@@ -1,6 +1,7 @@
 import { config } from '@/config';
 import { CheatRankSelector } from '@/components/cheat-rank-selector';
 import { HandRankingsModal } from '@/components/hand-rankings-modal';
+import { MugSelector } from '@/components/mug-selector';
 import { PlayingCard } from '@/components/playing-card';
 import { useServerTimer } from '@/hooks/useServerTime';
 import { kmClient } from '@/services/km-client';
@@ -11,47 +12,76 @@ import { playerStore } from '@/state/stores/player-store';
 import { evaluateHand, getHandQuality, hasDuplicateCards } from '@/utils/card-utils';
 import { KmTimeProgress } from '@kokimoki/shared';
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useSnapshot } from 'valtio';
 
 export const BettingPhaseView: React.FC = () => {
-	const { players, pot, bettingPhaseStartTime, roundNumber, worstPerformerLastRound } = useSnapshot(globalStore.proxy);
-	const { selectedCardIndices, cheatMode, cheatCardIndex, showCheatTip, botchedCheating } = useSnapshot(playerStore.proxy);
-	const serverTime = useServerTimer(250);
+	const { players, pot, bettingPhaseStartTime, roundNumber, losingPlayersLastRound } = useSnapshot(globalStore.proxy);
+	const { selectedCardIndices, cheatMode, cheatCardIndex, showCheatTip, botchedCheating, showMugSelector, mugTapCount } = useSnapshot(playerStore.proxy);
+	useServerTimer(250); // Force re-render every 250ms
+	
+	// Store selected cheat tip to prevent flickering
+	const [selectedCheatTip, setSelectedCheatTip] = React.useState<string>('');
 	
 	const myPlayer = players[kmClient.id];
 	const [localBet, setLocalBet] = React.useState(0);
 	const [hasChangedCards, setHasChangedCards] = React.useState(false);
-
-	// Calculate elapsed time
-	const timeElapsed = serverTime - bettingPhaseStartTime;
-
-	// Show tip if this player was the worst performer in previous round
+	
+	// Select random tip when showCheatTip becomes true
 	React.useEffect(() => {
-		// Reset tip at the start of each new round
-		playerActions.dismissCheatTip();
+		if (showCheatTip && !selectedCheatTip) {
+			const cheatTips = [config.cheatTip1, config.cheatTip2, config.cheatTip3];
+			const randomTip = cheatTips[Math.floor(Math.random() * cheatTips.length)];
+			setSelectedCheatTip(randomTip);
+		} else if (!showCheatTip && selectedCheatTip) {
+			// Clear tip when dismissed
+			setSelectedCheatTip('');
+		}
+	}, [showCheatTip, selectedCheatTip]);
+	
+	// Debug log for mug selector state
+	React.useEffect(() => {
+		console.log('[BettingPhaseView] showMugSelector:', showMugSelector, 'mugTapCount:', mugTapCount);
+	}, [showMugSelector, mugTapCount]);
+	
+	// Capture the initial offset when this round first renders
+	const initialOffsetRef = React.useRef<{round: number, offset: number}>({round: 0, offset: 0});
+	const currentServerTime = kmClient.serverTimestamp();
+	
+	if (initialOffsetRef.current.round !== roundNumber && bettingPhaseStartTime > 0) {
+		// New round detected - capture how far ahead we already are
+		initialOffsetRef.current = {
+			round: roundNumber,
+			offset: currentServerTime - bettingPhaseStartTime
+		};
+	}
+	
+	// Calculate elapsed time and subtract the initial offset
+	const actualElapsed = bettingPhaseStartTime > 0 ? currentServerTime - bettingPhaseStartTime : 0;
+	const adjustedElapsed = Math.max(0, actualElapsed - initialOffsetRef.current.offset);
+	const timeElapsed = Math.min(adjustedElapsed, config.bettingPhaseDuration * 1000);
+
+	// Show tip if this player lost money in previous round and reset mug taps
+	React.useEffect(() => {
+		const isLosingPlayer = losingPlayersLastRound.includes(kmClient.id);
+		const shouldShowTip = roundNumber > 1 && isLosingPlayer;
 		
-		// Reset botched cheating notification
-		kmClient.transact([playerStore], ([state]) => {
-			state.botchedCheating = false;
+		console.log('[BettingPhaseView] Effect triggered:', {
+			roundNumber,
+			losingPlayersLastRound: [...losingPlayersLastRound],
+			myId: kmClient.id,
+			isLosingPlayer,
+			shouldShowTip
 		});
 		
-		// Then check if this player should see the tip
-		if (roundNumber > 1 && worstPerformerLastRound === kmClient.id) {
-			console.log('[BettingPhaseView] Player had worst hand, showing tip:', {
-				roundNumber,
-				worstPerformerLastRound,
-				myId: kmClient.id
-			});
-			playerActions.showCheatTip();
-		} else {
-			console.log('[BettingPhaseView] Tip check:', {
-				roundNumber,
-				worstPerformerLastRound,
-				myId: kmClient.id,
-				shouldShow: roundNumber > 1 && worstPerformerLastRound === kmClient.id
-			});
-		}
-	}, [roundNumber, worstPerformerLastRound]);
+		// Update tip visibility, reset botched cheating, and reset mug taps
+		kmClient.transact([playerStore], ([state]) => {
+			state.showCheatTip = shouldShowTip;
+			state.botchedCheating = false;
+			state.mugTapCount = 0;
+			state.showMugSelector = false;
+		});
+	}, [roundNumber, JSON.stringify(losingPlayersLastRound)]);
 
 	if (!myPlayer) return null;
 
@@ -132,8 +162,8 @@ export const BettingPhaseView: React.FC = () => {
 					<p className="mb-2 text-center text-sm font-semibold">{config.timeRemaining}</p>
 					<KmTimeProgress
 						value={timeElapsed}
-						limit={config.bettingPhaseDuration}
-						className="w-full"
+						limit={config.bettingPhaseDuration * 1000}
+						className="w-full [&>div]:bg-white [&>div>div]:bg-red-600"
 					/>
 				</div>
 
@@ -198,14 +228,39 @@ export const BettingPhaseView: React.FC = () => {
 					</div>
 				</div>
 
-				{/* Bet Status */}
-				<div className="rounded-lg border-2 border-green-600 bg-white p-6 shadow-lg text-center">
-					<h2 className="mb-4 text-2xl font-bold text-green-600">Bet Placed!</h2>
+				{/* Bet Status - Tappable for mugging */}
+				<div
+					onClick={async (e) => {
+						e.stopPropagation();
+						console.log('[BettingPhaseView] Bet area clicked, hasMugged:', myPlayer.hasMugged, 'mugTapCount:', mugTapCount);
+						if (!myPlayer.hasMugged) {
+							await playerActions.tapMugArea();
+						}
+					}}
+					className="rounded-lg border-2 border-green-600 bg-white p-6 shadow-lg text-center cursor-pointer active:bg-green-50 select-none"
+					style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+				>
+					<h2 className="mb-4 text-2xl font-bold text-green-600">
+						Bet Placed!
+					</h2>
 					<p className="text-lg">
 						{config.currentBet}: <span className="font-bold">{myPlayer.bet}</span>
 					</p>
 					<p className="mt-2 text-gray-500">Waiting for round to end...</p>
+					{myPlayer.hasMugged && (
+						<p className="mt-2 text-sm text-red-600 font-semibold">
+							🎭 Mugging in progress...
+						</p>
+					)}
 				</div>
+				
+				{/* Mug Selector Modal */}
+				{showMugSelector && (
+					<MugSelector
+						isOpen={showMugSelector}
+						onClose={() => playerActions.closeMugSelector()}
+					/>
+				)}
 			</div>
 		);
 	}
@@ -218,14 +273,21 @@ export const BettingPhaseView: React.FC = () => {
 					onCancel={handleCancelCheat}
 				/>
 			)}
+			
+			{showMugSelector && (
+				<MugSelector
+					isOpen={showMugSelector}
+					onClose={() => playerActions.closeMugSelector()}
+				/>
+			)}
 
 		{/* Timer Progress */}
 		<div className="rounded-lg border-2 border-red-600 bg-white p-4 shadow-md">
 			<p className="mb-2 text-center text-sm font-semibold">{config.timeRemaining}</p>
 			<KmTimeProgress
 				value={timeElapsed}
-				limit={config.bettingPhaseDuration}
-				className="w-full"
+				limit={config.bettingPhaseDuration * 1000}
+				className="w-full [&>div]:bg-white [&>div>div]:bg-red-600"
 			/>
 		</div>
 
@@ -251,12 +313,12 @@ export const BettingPhaseView: React.FC = () => {
 			</div>
 		)}
 
-		{/* Worst hand tip message */}
-		{showCheatTip && (
+		{/* Cheat tip message */}
+		{showCheatTip && selectedCheatTip && (
 			<div className="rounded-lg border-2 border-orange-500 bg-orange-50 p-4 shadow-md">
 				<div className="mb-2 flex items-start justify-between">
 					<div className="text-sm font-semibold text-orange-800">
-						😈 Your hand was the worst ha, ha, ha
+						{config.cheatTipTitle}
 					</div>
 					<button
 						onClick={handleDismissTip}
@@ -266,10 +328,8 @@ export const BettingPhaseView: React.FC = () => {
 						✕
 					</button>
 				</div>
-				<div className="text-xs text-orange-700">
-					Here's a friendly tip: Tap 4 times on one card, and you can change it
-					to the desired one. Beware, if you do this, it will automatically bet
-					a random amount.
+				<div className="prose prose-sm max-w-none text-xs text-orange-700">
+					<ReactMarkdown>{selectedCheatTip}</ReactMarkdown>
 				</div>
 			</div>
 		)}
@@ -368,18 +428,18 @@ export const BettingPhaseView: React.FC = () => {
 			<div className="mb-4">
 				<div className="flex items-center justify-center gap-2 mb-2">
 					<button
-						onClick={() => adjustBet(-25)}
+						onClick={() => adjustBet(-config.betIncrementLarge)}
 						type="button"
 						className="rounded-lg bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600"
 					>
-						-25
+						-{config.betIncrementLarge}
 					</button>
 					<button
-						onClick={() => adjustBet(-5)}
+						onClick={() => adjustBet(-config.betIncrementSmall)}
 						type="button"
 						className="rounded-lg bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600"
 					>
-						-5
+						-{config.betIncrementSmall}
 					</button>
 					<div className="min-w-[100px] text-center">
 						<span className="text-2xl font-bold">{localBet}</span>
@@ -388,18 +448,18 @@ export const BettingPhaseView: React.FC = () => {
 						)}
 					</div>
 					<button
-						onClick={() => adjustBet(5)}
+						onClick={() => adjustBet(config.betIncrementSmall)}
 						type="button"
 						className="rounded-lg bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-600"
 					>
-						+5
+						+{config.betIncrementSmall}
 					</button>
 					<button
-						onClick={() => adjustBet(25)}
+						onClick={() => adjustBet(config.betIncrementLarge)}
 						type="button"
 						className="rounded-lg bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-600"
 					>
-						+25
+						+{config.betIncrementLarge}
 					</button>
 				</div>
 			</div>				<div className="flex gap-2">

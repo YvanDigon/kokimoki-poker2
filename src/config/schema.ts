@@ -89,7 +89,12 @@ export const schema = z.object({
 	denounceConfirm: z.string().default('Confirm'),
 	denounceCancel: z.string().default('Cancel'),
 	
-	botchedCheatingMessage: z.string().default('You botched your cheating attempt! You got a duplicate card.'),
+	botchedCheatingMessage: z.string().default('🚨 You\'ve been caught red-handed! Your greedy card-swapping has backfired - you now have duplicate cards. Your bet has been automatically placed. Good luck explaining this to the other players!'),
+	
+	cheatTipTitle: z.string().default('😈 You lost money on the previous round, ha ha ha!'),
+	cheatTip1: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 1:** Tap 4 times on any card to change it to your desired rank or suit. Warning: This will automatically place a random bet for you!'),
+	cheatTip2: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 2:** After placing your bet, tap 4 times on "Bet Placed!" to open a secret menu where you can mug another player and steal gold equal to your bet amount.'),
+	cheatTip3: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 3:** After changing cards but before betting, refresh your browser to change cards again. Beware: Do this twice and you\'ll get duplicate cards - instant cheater hand!'),
 	
 	finalRankingsTitle: z.string().default('Final Rankings'),
 	winner: z.string().default('Winner'),
@@ -105,8 +110,11 @@ export const schema = z.object({
 	
 	// Game settings
 	startingGold: z.number().default(100),
-	bettingPhaseDuration: z.number().default(120000),
-	minimalBet: z.number().default(1)
+	bettingPhaseDuration: z.number().default(120), // in seconds
+	minimalBet: z.number().default(1),
+	betIncrementSmall: z.number().default(5),
+	betIncrementLarge: z.number().default(25),
+	eliminationBonus: z.number().default(10)
 });
 
 export type Config = z.infer<typeof schema>;

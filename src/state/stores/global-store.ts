@@ -18,23 +18,15 @@ export interface PlayerData {
 	accusedOfCheating: boolean;
 	wronglyAccused: boolean;
 	receivedRedistributedGold: boolean;
-}
-
-export type GamePhase = 'betting' | 'results' | 'ended';
-
-export interface GlobalState {
-	controllerConnectionId: string;
-	started: boolean;
-	startTimestamp: number;
-	players: Record<string, PlayerData>;
-	phase: GamePhase;
-	roundNumber: number;
-	pot: number;
-	remainingDeck: Card[];
-	bettingPhaseStartTime: number;
-	punishmentUsedThisRound: boolean;
+	changedCards: boolean;
+	receivedEliminationBonus: boolean;
+	refreshCount: number;
+	botchedCheating: boolean;
+	muggedVictimId: string;
+	muggedAmount: number;
+	hasMugged: boolean;
 	winners: string[];
-	worstPerformerLastRound: string;
+	losingPlayersLastRound: string[];
 	eliminatedPlayers: string[]; // Names of eliminated players for presenter display
 	suspectedCheaters: Record<string, string[]>; // playerId -> array of accuserIds
 }
@@ -51,7 +43,7 @@ const initialState: GlobalState = {
 	bettingPhaseStartTime: 0,
 	winners: [],
 	punishmentUsedThisRound: false,
-	worstPerformerLastRound: '',
+	losingPlayersLastRound: [],
 	eliminatedPlayers: [],
 	suspectedCheaters: {}
 };

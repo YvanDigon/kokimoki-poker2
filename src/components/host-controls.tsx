@@ -17,7 +17,7 @@ export const HostControls: React.FC = () => {
 
 	// Calculate remaining time in betting phase
 	const bettingTimeElapsed = serverTime - bettingPhaseStartTime;
-	const bettingTimeRemaining = Math.max(0, config.bettingPhaseDuration - bettingTimeElapsed);
+	const bettingTimeRemaining = Math.max(0, config.bettingPhaseDuration * 1000 - bettingTimeElapsed);
 
 	const handleStartGame = async () => {
 		await globalActions.startGame();
