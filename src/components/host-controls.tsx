@@ -2,7 +2,7 @@ import { config } from '@/config';
 import { PunishCheaters } from '@/components/punish-cheaters';
 import { useServerTimer } from '@/hooks/useServerTime';
 import { globalActions } from '@/state/actions/global-actions';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import { KmTimeCountdown } from '@kokimoki/shared';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
@@ -90,7 +90,7 @@ export const HostControls: React.FC = () => {
 					<p className="text-sm">
 						Ready:{' '}
 						<span className="font-bold">
-							{Object.values(players).filter((p) => p.bet > 0 || p.folded).length} /{' '}
+						{Object.values(players).filter((p: PlayerData) => p.bet > 0 || p.folded).length} /{' '}
 							{playerCount}
 						</span>
 					</p>

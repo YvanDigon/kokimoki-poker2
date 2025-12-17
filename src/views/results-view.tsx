@@ -4,7 +4,7 @@ import { HandRankingsModal } from '@/components/hand-rankings-modal';
 import { PlayingCard } from '@/components/playing-card';
 import { kmClient } from '@/services/km-client';
 import { playerActions } from '@/state/actions/player-actions';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import { getGoldEmoji } from '@/utils/gold-emoji';
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -24,7 +24,7 @@ export const ResultsView: React.FC = () => {
 	
 	// Check if at least one cheater was actually caught (not wrongly accused)
 	const anyCheaterCaught = Object.values(players).some(
-		p => p.accusedOfCheating && p.cheated
+		(p: PlayerData) => p.accusedOfCheating && p.cheated
 	);
 
 	// Calculate winnings/losses (including minimal bet deducted at round start)

@@ -1,5 +1,5 @@
 import { config } from '@/config';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import { cn } from '@/utils/cn';
 import React from 'react';
 import Markdown from 'react-markdown';
@@ -18,7 +18,7 @@ export const ConnectionsView: React.FC<React.PropsWithChildren<Props>> = ({
 }) => {
 	const players = useSnapshot(globalStore.proxy).players;
 	const onlinePlayerIds = useSnapshot(globalStore.connections).clientIds;
-	const playersList = Object.entries(players).map(([id, player]) => ({
+	const playersList = Object.entries(players).map(([id, player]: [string, PlayerData]) => ({
 		id,
 		name: player.name,
 		isOnline: onlinePlayerIds.has(id)

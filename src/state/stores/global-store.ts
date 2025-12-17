@@ -6,6 +6,23 @@ export interface Card {
 	rank: Rank;
 }
 
+export interface GlobalState {
+	controllerConnectionId: string;
+	started: boolean;
+	startTimestamp: number;
+	players: Record<string, PlayerData>;
+	phase: 'betting' | 'results' | 'ended';
+	roundNumber: number;
+	pot: number;
+	remainingDeck: Card[];
+	bettingPhaseStartTime: number;
+	winners: string[];
+	punishmentUsedThisRound: boolean;
+	losingPlayersLastRound: string[];
+	eliminatedPlayers: string[];
+	suspectedCheaters: Record<string, string[]>;
+}
+
 export interface PlayerData {
 	name: string;
 	cards: Card[];
@@ -25,10 +42,6 @@ export interface PlayerData {
 	muggedVictimId: string;
 	muggedAmount: number;
 	hasMugged: boolean;
-	winners: string[];
-	losingPlayersLastRound: string[];
-	eliminatedPlayers: string[]; // Names of eliminated players for presenter display
-	suspectedCheaters: Record<string, string[]>; // playerId -> array of accuserIds
 }
 
 const initialState: GlobalState = {

@@ -1,5 +1,6 @@
-import type { Card } from '@/state/stores/global-store';
+import type { Card as GlobalCard } from '@/state/stores/global-store';
 
+export type Card = GlobalCard;
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
 export type Rank = 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K';
 

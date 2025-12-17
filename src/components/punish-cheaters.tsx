@@ -1,6 +1,5 @@
-import { config } from '@/config';
 import { globalActions } from '@/state/actions/global-actions';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -11,7 +10,7 @@ export const PunishCheaters: React.FC = () => {
 
 	// Only show players who bet and didn't fold
 	const playerEntries = Object.entries(players).filter(
-		([, player]) => !player.folded && player.bet > 0
+		([, player]: [string, PlayerData]) => !player.folded && player.bet > 0
 	);
 
 	const togglePlayer = (playerId: string) => {

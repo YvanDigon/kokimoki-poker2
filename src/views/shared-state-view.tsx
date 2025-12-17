@@ -55,14 +55,6 @@ export const SharedStateView: React.FC<React.PropsWithChildren<Props>> = ({
 						</button>
 					)}
 
-					{started && isHost && (
-						<button
-							className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 font-medium"
-							onClick={globalActions.stopGame}
-						>
-							{config.stopButton}
-						</button>
-					)}
 				</div>
 			</div>
 		</div>

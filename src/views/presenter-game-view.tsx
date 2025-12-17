@@ -1,7 +1,6 @@
 import { config } from '@/config';
 import { PlayingCard } from '@/components/playing-card';
 import { useServerTimer } from '@/hooks/useServerTime';
-import { kmClient } from '@/services/km-client';
 import { globalStore } from '@/state/stores/global-store';
 import { getGoldEmoji } from '@/utils/gold-emoji';
 import { KmTimeCountdown } from '@kokimoki/shared';

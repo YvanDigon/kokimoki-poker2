@@ -1,7 +1,7 @@
 import { config } from '@/config';
 import { kmClient } from '@/services/km-client';
 import { globalActions } from '@/state/actions/global-actions';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -20,7 +20,7 @@ export const DenounceCheaterModal: React.FC<DenounceCheaterModalProps> = ({
 	// Get list of players who bet and didn't fold (excluding current player and eliminated players)
 	const eligiblePlayers = React.useMemo(() => {
 		return Object.entries(players).filter(
-			([playerId, player]) =>
+			([playerId, player]: [string, PlayerData]) =>
 				playerId !== kmClient.id && // Exclude self
 				!player.folded && // Exclude folded players
 				player.bet > 0 && // Only players who bet

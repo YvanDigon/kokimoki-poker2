@@ -1,4 +1,3 @@
-import { PlayerMenu } from '@/components/player/menu';
 import { NameLabel } from '@/components/player/name-label';
 import { config } from '@/config';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';

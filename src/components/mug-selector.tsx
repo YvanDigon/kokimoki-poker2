@@ -1,8 +1,7 @@
-import { config } from '@/config';
 import { kmClient } from '@/services/km-client';
 import { globalActions } from '@/state/actions/global-actions';
 import { playerActions } from '@/state/actions/player-actions';
-import { globalStore } from '@/state/stores/global-store';
+import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
 
@@ -18,7 +17,7 @@ export const MugSelector: React.FC<MugSelectorProps> = ({ isOpen, onClose }) => 
 	if (!isOpen || !myPlayer) return null;
 
 	// Get list of players who can be mugged (have enough gold, not self, haven't mugged yet)
-	const eligibleVictims = Object.entries(players).filter(([id, player]) => {
+	const eligibleVictims = Object.entries(players).filter(([id, player]: [string, PlayerData]) => {
 		return (
 			id !== kmClient.id &&
 			player.gold >= myPlayer.bet &&

@@ -117,7 +117,7 @@ minimalBetLabel: 'Minimal bet'
 # Poker-specific settings
 bettingPhaseDuration: 180 # In seconds
 
-startingGold: 100 # The bet that each new player starts with
+startingGold: 100 # The pot that each new player starts with
 minimalBet: 1 # The minimal value that each player bets in each betting phase, even when they fold
 
 betIncrementSmall: 5 # The value which the player can modify the bet, positively or negatively, during the betting phase

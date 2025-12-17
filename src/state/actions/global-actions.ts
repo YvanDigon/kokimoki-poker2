@@ -1,6 +1,6 @@
 import { config } from '@/config';
 import { kmClient } from '@/services/km-client';
-import { createDeck, shuffleDeck, evaluateHand, compareHands } from '@/utils/card-utils';
+import { createDeck, shuffleDeck, evaluateHand, compareHands, type Rank, type Suit } from '@/utils/card-utils';
 import type { Card } from '../stores/global-store';
 import { globalStore } from '../stores/global-store';
 
@@ -453,7 +453,15 @@ async startNewGame() {
 					handName: '',
 					cheated: false,
 					accusedOfCheating: false,
-					wronglyAccused: false
+					wronglyAccused: false,
+					receivedRedistributedGold: false,
+					changedCards: false,
+					receivedEliminationBonus: false,
+					refreshCount: 0,
+					botchedCheating: false,
+					muggedVictimId: '',
+					muggedAmount: 0,
+					hasMugged: false
 				};
 			}
 		});
