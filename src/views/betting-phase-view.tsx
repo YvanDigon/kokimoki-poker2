@@ -90,8 +90,8 @@ export const BettingPhaseView: React.FC = () => {
 		return (
 			<div className="flex w-full max-w-2xl flex-col gap-4">
 				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg text-center">
-					<h2 className="mb-4 text-2xl font-bold text-gray-600">Round in Progress</h2>
-					<p className="text-gray-600">Please wait for the current round to end before joining the game.</p>
+					<h2 className="mb-4 text-2xl font-bold text-gray-600">{config.roundInProgressTitle}</h2>
+					<p className="text-gray-600">{config.roundInProgressMessage}</p>
 				</div>
 			</div>
 		);
@@ -148,7 +148,7 @@ export const BettingPhaseView: React.FC = () => {
 			<div className="flex w-full max-w-2xl flex-col gap-4">
 				<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg text-center">
 					<h2 className="mb-4 text-2xl font-bold text-gray-600">{config.youFolded}</h2>
-					<p className="text-gray-500">Waiting for round to end...</p>
+					<p className="text-gray-500">{config.waitingForRoundEnd}</p>
 				</div>
 			</div>
 		);
@@ -346,7 +346,7 @@ export const BettingPhaseView: React.FC = () => {
 						return (
 							<div className="mb-3 text-center">
 								<span className="text-lg font-bold text-red-600">
-									🚨 Cheater hand
+									{config.cheaterHand}
 								</span>
 							</div>
 						);

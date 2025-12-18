@@ -64,13 +64,13 @@ export const HostControls: React.FC = () => {
 				</button>
 
 				{!canStartGame && playerCount < 2 && (
-					<p className="mt-2 text-sm text-red-600">Need at least 2 players to start</p>
-				)}
-			</div>
-		);
-	}
+				<p className="mt-2 text-sm text-red-600">{config.needMinPlayersMessage}</p>
+			)}
+		</div>
+	);
+}
 
-	if (phase === 'betting') {
+if (phase === 'betting') {
 		return (
 			<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
 				<h2 className="mb-4 text-xl font-bold">
@@ -88,13 +88,13 @@ export const HostControls: React.FC = () => {
 						</div>
 					</div>
 					<p className="text-sm">
-						Ready:{' '}
-						<span className="font-bold">
-						{Object.values(players).filter((p: PlayerData) => p.bet > 0 || p.folded).length} /{' '}
-							{playerCount}
-						</span>
-					</p>
-				</div>
+					{config.readyLabel}:{' '}
+					<span className="font-bold">
+					{Object.values(players).filter((p: PlayerData) => p.bet > 0 || p.folded).length} /{' '}
+						{playerCount}
+					</span>
+				</p>
+			</div>
 
 				<button
 					onClick={handleEndBetting}

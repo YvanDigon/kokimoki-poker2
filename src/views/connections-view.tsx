@@ -44,21 +44,21 @@ export const ConnectionsView: React.FC<React.PropsWithChildren<Props>> = ({
 
 				{playersList.length > 0 && (
 					<div className="mt-4">
-						<h3 className="mb-2 text-lg font-semibold">Player List</h3>
-						<ul className="bg-slate-50 rounded-lg divide-y divide-gray-200">
-							{playersList.map((player) => (
-								<li key={player.id} className="px-4 py-3">
-									<div className="flex items-center justify-between">
-										<span>{player.name}</span>
-										<span
-											className={cn(
-												'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-												player.isOnline
-													? 'bg-green-100 text-green-800'
-													: 'border border-gray-300 text-gray-700'
-											)}
-										>
-											{player.isOnline ? 'Online' : 'Offline'}
+					<h3 className="mb-2 text-lg font-semibold">{config.playerListTitle}</h3>
+					<ul className="bg-slate-50 rounded-lg divide-y divide-gray-200">
+						{playersList.map((player) => (
+							<li key={player.id} className="px-4 py-3">
+								<div className="flex items-center justify-between">
+									<span>{player.name}</span>
+									<span
+										className={cn(
+											'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+											player.isOnline
+												? 'bg-green-100 text-green-800'
+												: 'border border-gray-300 text-gray-700'
+										)}
+									>
+										{player.isOnline ? config.onlineStatus : config.offlineStatus}
 										</span>
 									</div>
 								</li>

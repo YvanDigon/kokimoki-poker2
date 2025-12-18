@@ -15,7 +15,6 @@ export const schema = z.object({
 	players: z.string().default('Players'),
 	timeElapsed: z.string().default('Time elapsed'),
 	startButton: z.string().default('Start Game'),
-	stopButton: z.string().default('Stop Game'),
 	loading: z.string().default('Loading...'),
 
 	menuTitle: z.string().default('Menu'),
@@ -107,6 +106,30 @@ export const schema = z.object({
 		),
 	
 	minimalBetLabel: z.string().default('Minimal bet'),
+	
+	playerListTitle: z.string().default('Player List'),
+	onlineStatus: z.string().default('Online'),
+	offlineStatus: z.string().default('Offline'),
+	
+	roundInProgressTitle: z.string().default('Round in Progress'),
+	roundInProgressMessage: z.string().default('Please wait for the current round to end before joining the game.'),
+	waitingForRoundEnd: z.string().default('Waiting for round to end...'),
+	cheaterHand: z.string().default('🚨 Cheater hand'),
+	betPlacedTitle: z.string().default('Bet Placed!'),
+	muggingInProgress: z.string().default('🎭 Mugging in progress...'),
+	
+	punishCheaters: z.string().default('Punish Cheaters'),
+	punishmentUsedMessage: z.string().default('Punishment already used this round'),
+	selectPlayersToAccuse: z.string().default('Select Players to Accuse'),
+	cancelButton: z.string().default('Cancel'),
+	confirmButton: z.string().default('Confirm'),
+	
+	needMinPlayersMessage: z.string().default('Need at least 2 players to start'),
+	readyLabel: z.string().default('Ready'),
+	
+	selectCardTitle: z.string().default('Select Card'),
+	chooseRankLabel: z.string().default('Choose Rank (random suit):'),
+	chooseSuitLabel: z.string().default('Or choose Suit (random rank):'),
 	
 	// Game settings
 	startingGold: z.number().default(100),

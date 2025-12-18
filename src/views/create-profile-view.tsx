@@ -41,11 +41,7 @@ export const CreateProfileView: React.FC<Props> = ({ className }) => {
 			)}
 		>
 			<div className="p-6">
-				<img 
-					src="https://loquiz.com/wpmainpage/wp-content/uploads/2025/12/image_2025-12-17_130757437.png" 
-					alt="Red Handed Poker"
-					className="w-full mb-4 object-contain"
-				/>
+				<img src="/redHandedPoker.jpg" alt="Logo" />
 				<h2 className="text-xl font-bold mb-2">{config.playerNameTitle}</h2>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<label className="block">
