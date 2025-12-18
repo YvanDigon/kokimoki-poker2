@@ -2,6 +2,7 @@ import { config } from '@/config';
 import { playerActions } from '@/state/actions/player-actions';
 import { cn } from '@/utils/cn';
 import { generateRandomCardName } from '@/utils/card-utils';
+import logo from '@/assets/redHandedPoker.jpg';
 import * as React from 'react';
 
 interface Props {
@@ -41,7 +42,7 @@ export const CreateProfileView: React.FC<Props> = ({ className }) => {
 			)}
 		>
 			<div className="p-6">
-				<img src="/redHandedPoker.jpg" alt="Logo" />
+			<img src={logo} alt="Logo" />
 				<h2 className="text-xl font-bold mb-2">{config.playerNameTitle}</h2>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<label className="block">
