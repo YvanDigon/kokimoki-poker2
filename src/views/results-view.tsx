@@ -5,6 +5,7 @@ import { PlayingCard } from '@/components/playing-card';
 import { kmClient } from '@/services/km-client';
 import { playerActions } from '@/state/actions/player-actions';
 import { globalStore, type PlayerData } from '@/state/stores/global-store';
+import { playerStore } from '@/state/stores/player-store';
 import { getGoldEmoji } from '@/utils/gold-emoji';
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -12,6 +13,7 @@ import { useSnapshot } from 'valtio';
 
 export const ResultsView: React.FC = () => {
 	const { players, winners, pot, punishmentUsedThisRound } = useSnapshot(globalStore.proxy);
+	const { muggingFailed } = useSnapshot(playerStore.proxy);
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 	const myPlayer = players[kmClient.id];
 
@@ -103,7 +105,7 @@ export const ResultsView: React.FC = () => {
 						😔 Missed Opportunity
 					</h3>
 					<p className="text-center text-gray-700">
-						A player went broke, but you folded early and missed out on the 20 coin survivor's bonus. Stay in the game to reap the rewards!
+					A player went broke, but you folded early and missed out on the {config.eliminationBonus} coin survivor's bonus. Stay in the game to reap the rewards!
 					</p>
 				</div>
 			)}
@@ -120,6 +122,28 @@ export const ResultsView: React.FC = () => {
 				</div>
 			)}
 
+			{/* Mugging Failed Notification */}
+			{muggingFailed && (
+				<div className="rounded-lg border-2 border-blue-500 bg-blue-50 p-6 shadow-lg">
+					<div className="flex items-start justify-between">
+						<p className="text-sm font-bold text-blue-800">
+							{config.muggingFailedMessage}
+						</p>
+						<button
+							onClick={async () => {
+								await kmClient.transact([playerStore], ([state]) => {
+									state.muggingFailed = false;
+								});
+							}}
+							type="button"
+							className="text-blue-600 hover:text-blue-800 text-xl font-bold ml-2"
+						>
+							×
+						</button>
+					</div>
+				</div>
+			)}
+
 			{/* Accusation Notification */}
 			{wasAccused && (
 				<div className={`rounded-lg border-2 p-6 shadow-lg ${
@@ -130,12 +154,12 @@ export const ResultsView: React.FC = () => {
 					<h3 className={`mb-2 text-center text-xl font-bold ${
 						myPlayer.wronglyAccused ? 'text-green-600' : 'text-red-600'
 					}`}>
-						{myPlayer.wronglyAccused ? '💢 Wrongly Accused!' : '⚠️ Caught Cheating!'}
-					</h3>
-					<p className="text-center">
-						{myPlayer.wronglyAccused
-							? 'You were wrongly accused! Your gold has been doubled.'
-							: 'You were caught red-handed! Half your gold has been confiscated and redistributed to the honest players who stayed in the game.'}
+					{myPlayer.wronglyAccused ? config.wronglyAccusedTitle : config.caughtCheatingTitle}
+				</h3>
+				<p className="text-center">
+					{myPlayer.wronglyAccused
+						? config.wronglyAccusedMessage
+						: config.caughtCheatingMessage}
 					</p>
 				</div>
 			)}
@@ -143,17 +167,18 @@ export const ResultsView: React.FC = () => {
 			<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
 				<h2 className="mb-6 text-center text-2xl font-bold">{config.resultsTitle}</h2>
 
-				{/* Result Status */}
-				<div className="mb-6 rounded-lg bg-gray-50 p-4 text-center">
-					{myPlayer.folded || myBet === 0 ? (
-						<>
-							<p className="text-xl font-bold text-gray-600">{config.youFolded}</p>
-							<p className="mt-2 text-lg text-red-600 flex items-center justify-center gap-2">
-								<span>{config.losses}: -{totalLost}</span>
-								{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
-							</p>
-						</>
-					) : isWinner ? (
+				{/* Result Status - Only show if player has cards (participated in round) */}
+				{myPlayer.cards.length > 0 && (
+					<div className="mb-6 rounded-lg bg-gray-50 p-4 text-center">
+						{myPlayer.folded || myBet === 0 ? (
+							<>
+								<p className="text-xl font-bold text-gray-600">{config.youFolded}</p>
+								<p className="mt-2 text-lg text-red-600 flex items-center justify-center gap-2">
+									<span>{config.losses}: -{totalLost}</span>
+									{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
+								</p>
+							</>
+						) : isWinner ? (
 						<>
 							<p className="mb-2 text-2xl font-bold text-green-600">{config.youWon}</p>
 							<p className="text-lg flex items-center justify-center gap-2">
@@ -181,9 +206,10 @@ export const ResultsView: React.FC = () => {
 						</>
 					)}
 				</div>
+			)}
 
-				{/* My Hand */}
-				{!myPlayer.folded && myBet > 0 && (
+			{/* My Hand */}
+			{!myPlayer.folded && myBet > 0 && (
 					<div className="mb-6">
 						<h3 className="mb-2 text-center font-bold">
 							{config.yourCards}

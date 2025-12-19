@@ -327,12 +327,16 @@ export const globalActions = {
 					const victim = globalState.players[mugger.muggedVictimId];
 					if (victim) {
 						const stolenAmount = mugger.bet; // Steal same amount as mugger's bet
-						victim.gold -= stolenAmount;
-						mugger.gold += stolenAmount;
-						victim.muggedAmount = stolenAmount;
-						
-						// Mark mugger as cheater
-						mugger.cheated = true;
+						// Double check victim has enough gold after their bet
+						const victimGoldAfterBet = victim.gold - victim.bet;
+						if (victimGoldAfterBet >= stolenAmount) {
+							victim.gold -= stolenAmount;
+							mugger.gold += stolenAmount;
+							victim.muggedAmount = stolenAmount;
+							
+							// Mark mugger as cheater
+							mugger.cheated = true;
+						}
 					}
 				}
 			}
@@ -593,11 +597,11 @@ async startNewGame() {
 
 			// Second pass: distribute confiscated gold among betting players
 			if (totalConfiscatedGold > 0) {
-				// Get all betting players who are not folded and not rightfully accused cheaters
+				// Get all betting players who are not folded, not eliminated, and not rightfully accused cheaters
 				const eligiblePlayers = Object.keys(globalState.players).filter(
 					(id) => {
 						const p = globalState.players[id];
-						return !p.folded && p.bet > 0 && !rightfullyAccusedIds.has(id);
+						return !p.folded && p.bet > 0 && p.gold > 0 && !rightfullyAccusedIds.has(id);
 					}
 				);
 
@@ -636,12 +640,31 @@ async clearSuspicions() {
 },
 
 async executeMug(muggerId: string, victimId: string) {
-	await kmClient.transact([globalStore], ([globalState]) => {
+	const { playerStore } = await import('../stores/player-store');
+	const result = await kmClient.transact([globalStore, playerStore], ([globalState, playerState]) => {
 		const mugger = globalState.players[muggerId];
-		if (!mugger || mugger.hasMugged) return;
+		const victim = globalState.players[victimId];
+		if (!mugger || mugger.hasMugged || !victim) return { failed: false };
+		
+		// Check if victim will have enough gold after their bet is deducted
+		const victimGoldAfterBet = victim.gold - victim.bet;
+		const amountToSteal = mugger.bet;
+		
+		// If victim doesn't have enough gold after their bet, cancel mugging
+		if (victimGoldAfterBet < amountToSteal) {
+			// Show failure notification without marking as cheater
+			playerState.muggingFailed = true;
+			// Reset mugging state
+			playerState.showMugSelector = false;
+			playerState.mugTapCount = 0;
+			return { failed: true };
+		}
 		
 		mugger.muggedVictimId = victimId;
 		mugger.hasMugged = true;
+		return { failed: false };
 	});
+	
+	return result;
 }
 };

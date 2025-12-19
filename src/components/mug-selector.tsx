@@ -1,3 +1,4 @@
+import { config } from '@/config';
 import { kmClient } from '@/services/km-client';
 import { globalActions } from '@/state/actions/global-actions';
 import { playerActions } from '@/state/actions/player-actions';
@@ -21,7 +22,6 @@ export const MugSelector: React.FC<MugSelectorProps> = ({ isOpen, onClose }) => 
 		return (
 			id !== kmClient.id &&
 			player.gold >= myPlayer.bet &&
-			!player.folded &&
 			!myPlayer.hasMugged
 		);
 	});
@@ -43,16 +43,16 @@ export const MugSelector: React.FC<MugSelectorProps> = ({ isOpen, onClose }) => 
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
 			<div className="w-full max-w-md rounded-lg border-2 border-red-600 bg-white p-6 shadow-xl">
 				<h2 className="mb-4 text-center text-2xl font-bold text-red-600">
-					🎭 Choose Your Target
+					{config.mugSelectorTitle}
 				</h2>
 				
 				<p className="mb-4 text-center text-sm text-gray-600">
-					Steal {myPlayer.bet} gold from another player. They won't know it was you!
+					{config.mugSelectorDescription.replace('{amount}', myPlayer.bet.toString())}
 				</p>
 
 				{eligibleVictims.length === 0 ? (
 					<p className="mb-4 text-center text-gray-500">
-						No eligible players to mug (they need at least {myPlayer.bet} gold)
+						{config.mugNoEligiblePlayers.replace('{amount}', myPlayer.bet.toString())}
 					</p>
 				) : (
 					<div className="mb-4 space-y-2">
@@ -74,7 +74,7 @@ export const MugSelector: React.FC<MugSelectorProps> = ({ isOpen, onClose }) => 
 					type="button"
 					className="w-full rounded-lg bg-gray-400 px-4 py-2 font-semibold text-white hover:bg-gray-500"
 				>
-					Cancel
+					{config.mugCancelButton}
 				</button>
 			</div>
 		</div>

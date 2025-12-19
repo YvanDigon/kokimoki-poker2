@@ -124,6 +124,7 @@ waitingForRoundEnd: 'Waiting for round to end...'
 cheaterHand: '🚨 Cheater hand'
 betPlacedTitle: 'Bet Placed!'
 muggingInProgress: '🎭 Mugging in progress...'
+muggingFailedMessage: '🎭 The player you tried to mug has almost nothing left. You felt some pity and decided not to proceed with the theft. Your conscience is clear!'
 
 punishCheaters: 'Punish Cheaters'
 punishmentUsedMessage: 'Punishment already used this round'
@@ -133,10 +134,21 @@ confirmButton: 'Confirm'
 
 needMinPlayersMessage: 'Need at least 2 players to start'
 readyLabel: 'Ready'
+newPlayerLabel: '(New player)'
 
 selectCardTitle: 'Select Card'
 chooseRankLabel: 'Choose Rank (random suit):'
 chooseSuitLabel: 'Or choose Suit (random rank):'
+
+mugSelectorTitle: '🎭 Choose Your Target'
+mugSelectorDescription: 'Steal {amount} gold from another player. They won''t know it was you!'
+mugNoEligiblePlayers: 'No eligible players to mug (they need at least {amount} gold)'
+mugCancelButton: 'Cancel'
+
+wronglyAccusedTitle: '💢 Wrongly Accused!'
+caughtCheatingTitle: '⚠️ Caught Cheating!'
+wronglyAccusedMessage: 'You were wrongly accused! Your gold has been doubled.'
+caughtCheatingMessage: 'You were caught red-handed! Half your gold has been confiscated and redistributed to the honest players who stayed in the game.'
 
 # Poker-specific settings
 bettingPhaseDuration: 180 # In seconds

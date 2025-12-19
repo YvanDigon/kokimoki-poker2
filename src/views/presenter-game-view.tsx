@@ -17,6 +17,11 @@ export const PresenterGameView: React.FC = () => {
 	const bettingTimeElapsed = serverTime - bettingPhaseStartTime;
 	const bettingTimeRemaining = Math.max(0, config.bettingPhaseDuration * 1000 - bettingTimeElapsed);
 
+	// Calculate current pot including all bets
+	const currentPot = phase === 'betting' 
+		? pot + Object.values(players).reduce((sum, p) => sum + p.bet, 0)
+		: pot;
+
 	if (phase === 'betting') {
 		return (
 			<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
@@ -26,7 +31,7 @@ export const PresenterGameView: React.FC = () => {
 
 			<div className="mb-6 text-center space-y-2">
 				<p className="text-xl">
-					{config.pot}: <span className="font-bold text-green-600">{pot}</span>
+					{config.pot}: <span className="font-bold text-green-600">{currentPot}</span>
 				</p>
 				<div>
 					<p className="text-lg font-bold mb-2">{config.timeRemaining}:</p>
@@ -65,7 +70,7 @@ export const PresenterGameView: React.FC = () => {
 										<span>
 											{config.currentBet}:{' '}
 											<span className="font-bold">
-												{player.folded ? config.youFolded : player.bet > 0 ? player.bet : '-'}
+												{player.cards.length === 0 ? config.newPlayerLabel : player.folded ? config.youFolded : player.bet > 0 ? player.bet : '-'}
 											</span>
 										</span>
 										{player.bet > 0 && !player.folded && (
@@ -103,12 +108,6 @@ export const PresenterGameView: React.FC = () => {
 			}
 		});
 
-		// Function to check if a card is duplicated
-		const isDuplicateCard = (card: { suit: string; rank: string }) => {
-			const cardKey = `${card.suit}-${card.rank}`;
-			return (cardCounts.get(cardKey) || 0) > 1;
-		};
-
 		return (
 			<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
 				<h2 className="mb-4 text-center text-2xl font-bold">
@@ -117,7 +116,7 @@ export const PresenterGameView: React.FC = () => {
 
 				<div className="mb-4 text-center">
 					<p className="text-xl flex items-center justify-center gap-2">
-						<span>{config.pot}: <span className="font-bold text-green-600">{pot}</span></span>
+						<span>{config.pot}: <span className="font-bold text-green-600">{currentPot}</span></span>
 						<span>{getGoldEmoji(pot)}</span>
 					</p>
 				</div>
@@ -166,7 +165,7 @@ export const PresenterGameView: React.FC = () => {
 							{wasAccused && player.cheated && (
 								<div className="mt-1 text-center">
 									<span className="text-xs font-bold text-red-600">
-										⚠️ CAUGHT CHEATING
+									{config.caughtCheatingTitle}
 									</span>
 								</div>
 							)}
@@ -174,7 +173,7 @@ export const PresenterGameView: React.FC = () => {
 						{wasAccused && player.wronglyAccused && (
 							<div className="mt-1 text-center">
 								<span className="text-xs font-bold text-green-600">
-									💢 WRONGLY ACCUSED
+								{config.wronglyAccusedTitle}
 								</span>
 							</div>
 						)}
@@ -202,7 +201,7 @@ export const PresenterGameView: React.FC = () => {
 											<PlayingCard 
 												key={idx} 
 												card={card} 
-												className={`h-14 w-10 ${isDuplicateCard(card) ? 'bg-red-100' : ''}`}
+												className="h-14 w-10"
 												compact 
 											/>
 										))}

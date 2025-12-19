@@ -9,9 +9,9 @@ export const PunishCheaters: React.FC = () => {
 	const [selectedPlayers, setSelectedPlayers] = React.useState<Set<string>>(new Set());
 	const [showModal, setShowModal] = React.useState(false);
 
-	// Only show players who bet and didn't fold
+	// Only show players who bet, didn't fold, and are not eliminated
 	const playerEntries = Object.entries(players).filter(
-		([, player]: [string, PlayerData]) => !player.folded && player.bet > 0
+		([, player]: [string, PlayerData]) => !player.folded && player.bet > 0 && player.gold > 0
 	);
 
 	const togglePlayer = (playerId: string) => {

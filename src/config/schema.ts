@@ -118,6 +118,7 @@ export const schema = z.object({
 	cheaterHand: z.string().default('🚨 Cheater hand'),
 	betPlacedTitle: z.string().default('Bet Placed!'),
 	muggingInProgress: z.string().default('🎭 Mugging in progress...'),
+	muggingFailedMessage: z.string().default('🎭 The player you tried to mug has almost nothing left. You felt some pity and decided not to proceed with the theft. Your conscience is clear!'),
 	
 	punishCheaters: z.string().default('Punish Cheaters'),
 	punishmentUsedMessage: z.string().default('Punishment already used this round'),
@@ -127,10 +128,21 @@ export const schema = z.object({
 	
 	needMinPlayersMessage: z.string().default('Need at least 2 players to start'),
 	readyLabel: z.string().default('Ready'),
+	newPlayerLabel: z.string().default('New player'),
 	
 	selectCardTitle: z.string().default('Select Card'),
 	chooseRankLabel: z.string().default('Choose Rank (random suit):'),
 	chooseSuitLabel: z.string().default('Or choose Suit (random rank):'),
+	
+	mugSelectorTitle: z.string().default('🎭 Choose Your Target'),
+	mugSelectorDescription: z.string().default('Steal {amount} gold from another player. They won\'t know it was you!'),
+	mugNoEligiblePlayers: z.string().default('No eligible players to mug (they need at least {amount} gold)'),
+	mugCancelButton: z.string().default('Cancel'),
+	
+	wronglyAccusedTitle: z.string().default('💢 Wrongly Accused!'),
+	caughtCheatingTitle: z.string().default('⚠️ Caught Cheating!'),
+	wronglyAccusedMessage: z.string().default('You were wrongly accused! Your gold has been doubled.'),
+	caughtCheatingMessage: z.string().default('You were caught red-handed! Half your gold has been confiscated and redistributed to the honest players who stayed in the game.'),
 	
 	// Game settings
 	startingGold: z.number().default(100),

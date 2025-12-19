@@ -10,7 +10,7 @@ import { playerActions } from '@/state/actions/player-actions';
 import { globalStore } from '@/state/stores/global-store';
 import { playerStore } from '@/state/stores/player-store';
 import { evaluateHand, getHandQuality, hasDuplicateCards } from '@/utils/card-utils';
-import { KmTimeProgress } from '@kokimoki/shared';
+import { KmTimeCountdown } from '@kokimoki/shared';
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useSnapshot } from 'valtio';
@@ -85,6 +85,11 @@ export const BettingPhaseView: React.FC = () => {
 
 	if (!myPlayer) return null;
 
+	// Check if player is eliminated (no gold left)
+	if (myPlayer.gold <= 0) {
+		return null; // Don't show anything, wait for transition to results view
+	}
+
 	// Check if player joined mid-round (no cards dealt)
 	if (myPlayer.cards.length === 0) {
 		return (
@@ -157,14 +162,12 @@ export const BettingPhaseView: React.FC = () => {
 	if (myPlayer.bet > 0) {
 		return (
 			<div className="flex w-full max-w-2xl flex-col gap-4">
-				{/* Timer Progress */}
+				{/* Timer */}
 				<div className="rounded-lg border-2 border-red-600 bg-white p-4 shadow-md">
-					<p className="mb-2 text-center text-sm font-semibold">{config.timeRemaining}</p>
-					<KmTimeProgress
-						value={timeElapsed}
-						limit={config.bettingPhaseDuration * 1000}
-						className="w-full [&>div]:bg-white [&>div>div]:bg-red-600"
-					/>
+					<p className="mb-2 text-center text-lg font-bold">{config.timeRemaining}:</p>
+					<div className="text-4xl font-bold text-blue-600 text-center">
+						<KmTimeCountdown ms={Math.max(0, config.bettingPhaseDuration * 1000 - timeElapsed)} />
+					</div>
 				</div>
 
 				{/* Botched Cheating Notification */}
@@ -261,34 +264,32 @@ export const BettingPhaseView: React.FC = () => {
 						onClose={() => playerActions.closeMugSelector()}
 					/>
 				)}
-			</div>
-		);
-	}
+		</div>
+	);
+}
 
-	return (
-		<div className="flex w-full max-w-2xl flex-col gap-4">
-			{cheatMode && (
-				<CheatRankSelector
-					cardIndex={cheatCardIndex}
-					onCancel={handleCancelCheat}
-				/>
-			)}
-			
-			{showMugSelector && (
-				<MugSelector
-					isOpen={showMugSelector}
-					onClose={() => playerActions.closeMugSelector()}
-				/>
-			)}
-
-		{/* Timer Progress */}
-		<div className="rounded-lg border-2 border-red-600 bg-white p-4 shadow-md">
-			<p className="mb-2 text-center text-sm font-semibold">{config.timeRemaining}</p>
-			<KmTimeProgress
-				value={timeElapsed}
-				limit={config.bettingPhaseDuration * 1000}
-				className="w-full [&>div]:bg-white [&>div>div]:bg-red-600"
+return (
+	<div className="flex w-full max-w-2xl flex-col gap-4">
+		{cheatMode && (
+			<CheatRankSelector
+				cardIndex={cheatCardIndex}
+				onCancel={handleCancelCheat}
 			/>
+		)}
+		
+		{showMugSelector && (
+			<MugSelector
+				isOpen={showMugSelector}
+				onClose={() => playerActions.closeMugSelector()}
+			/>
+		)}
+
+		{/* Timer */}
+		<div className="rounded-lg border-2 border-red-600 bg-white p-4 shadow-md">
+			<p className="mb-2 text-center text-lg font-bold">{config.timeRemaining}:</p>
+			<div className="text-4xl font-bold text-blue-600 text-center">
+				<KmTimeCountdown ms={Math.max(0, config.bettingPhaseDuration * 1000 - timeElapsed)} />
+			</div>
 		</div>
 
 		{/* Botched Cheating Notification */}
@@ -334,8 +335,8 @@ export const BettingPhaseView: React.FC = () => {
 			</div>
 		)}
 
-	{/* Cards */}
-	<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
+		{/* Cards */}
+		<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
 			<div className="mb-4 flex items-center justify-between">
 				<h3 className="font-bold">{config.yourCards}</h3>
 				<HandRankingsModal currentCards={myPlayer.cards} />
