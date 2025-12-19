@@ -241,7 +241,7 @@ export const BettingPhaseView: React.FC = () => {
 					style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
 				>
 					<h2 className="mb-4 text-2xl font-bold text-green-600">
-						Bet Placed!
+						{config.betPlacedTitle}
 					</h2>
 					<p className="text-lg">
 						{config.currentBet}: <span className="font-bold">{myPlayer.bet}</span>
@@ -249,7 +249,7 @@ export const BettingPhaseView: React.FC = () => {
 					<p className="mt-2 text-gray-500">Waiting for round to end...</p>
 					{myPlayer.hasMugged && (
 						<p className="mt-2 text-sm text-red-600 font-semibold">
-							🎭 Mugging in progress...
+							{config.muggingInProgress}
 						</p>
 					)}
 				</div>

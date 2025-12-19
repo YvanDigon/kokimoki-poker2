@@ -44,6 +44,7 @@ export const schema = z.object({
 	yourCards: z.string().default('Your Cards'),
 	yourGold: z.string().default('Your Gold'),
 	currentBet: z.string().default('Current Bet'),
+	betLabel: z.string().default('Bet:'),
 	pot: z.string().default('Pot'),
 	timeRemaining: z.string().default('Time Remaining'),
 	

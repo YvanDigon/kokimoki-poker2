@@ -187,11 +187,11 @@ export const PresenterGameView: React.FC = () => {
 								
 								{!player.folded && player.bet > 0 && (
 									<div className="mb-1 text-center text-xs flex items-center justify-center gap-1">
-										<span>Bet: <span className="font-bold text-blue-600">{player.bet}</span></span>
-										<span>{getGoldEmoji(player.bet)}</span>
-									</div>
-								)}
-
+									<span>{config.betLabel} <span className="font-bold text-blue-600">{player.bet}</span></span>
+									<span>{getGoldEmoji(player.bet)}</span>
+								</div>
+							)}
+							
 							{!player.folded && player.handName && (
 								<>
 									<p className="mb-1 text-center text-xs font-bold text-blue-600">
@@ -218,7 +218,9 @@ export const PresenterGameView: React.FC = () => {
 										</div>
 									)}
 								</>
-						)}								{player.folded && (
+							)}
+							
+							{player.folded && (
 								<p className="text-center text-xs text-gray-500">{config.youFolded}</p>
 							)}
 						</div>
@@ -241,6 +243,8 @@ export const PresenterGameView: React.FC = () => {
 				))}
 			</div>
 		</div>
-	);
-}	return null;
+		);
+	}
+	
+	return null;
 };

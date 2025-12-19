@@ -17,7 +17,7 @@ const HostPresenterHeader: React.FC<LayoutProps> = ({
 	children,
 	className
 }) => (
-	<header className={cn('mb-8', className)}>
+	<header className={cn('mb-8 text-white', className)}>
 		<h1 className="text-2xl font-bold">{config.title}</h1>
 		{children}
 	</header>

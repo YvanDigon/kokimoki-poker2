@@ -45,6 +45,7 @@ roundNumber: 'Round'
 yourCards: 'Your Cards'
 yourGold: 'Your Gold'
 currentBet: 'Current Bet'
+betLabel: 'Bet:'
 pot: 'Pot'
 timeRemaining: 'Time Remaining'
 
