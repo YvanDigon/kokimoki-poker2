@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.14] - 2026-01-14
+
+### Added
+- Added host instructions configuration: `hostInstructionsTitle`, `hostInstructionsMd`, `hostInstructionsButton`
+- Host screen now displays comprehensive instructions on the right side of the QR code during player join phase
+- Added "Info" button to host screen that toggles instructions panel after game starts
+
+### Changed
+- Updated `ComebackModeView` to display "No Winner" notification (grey) when no players place bets during a round
+- Host instructions now appear in a collapsible panel during gameplay instead of always visible
+
 ## [0.1.13] - 2026-01-14
 
 ### Added
@@ -9,6 +20,8 @@ All notable changes to this project will be documented in this file.
 - Added hand quality configuration strings: `handQuality*` (e.g., "Bad hand", "Incredible hand", "Legendary hand")
 - Added additional UI configuration strings: `netLabel`, `foldedLabel`, `comebackPredictingLabel`
 - Added elimination/mugging-related configuration strings: `eliminationBonusTitle`, `eliminationBonusMessage`, `eliminationMissedTitle`, `eliminationMissedMessage`, `muggedTitle`, `muggedMessage`
+- Added comeback edge case configuration strings: `comebackAllPlayersFoldedTitle`, `comebackAllPlayersFoldedMessage`
+- Added `allPlayersFolded` field to track when all players fold during a round
 - **Comeback Mode**: Players who reach 0 gold now enter "Comeback Mode" instead of being eliminated
   - Comeback players see a spectator view similar to the presenter screen
   - They can predict which active player will win each round
@@ -35,6 +48,7 @@ All notable changes to this project will be documented in this file.
 - `startNewRound` now handles comeback mode players separately from active players
 - Betting phase time calculation and mugging mechanics exclude comeback mode players
 - Results view shows appropriate messages for entering comeback mode, successful comebacks, and failed predictions
+- Fixed edge case: when all players fold and comeback mode players are present, they now see a grey "No Winner" notification instead of a red "Wrong Prediction" notification
 
 ### Removed
 - Removed `rejoinGame` action from player actions (replaced by comeback mode)

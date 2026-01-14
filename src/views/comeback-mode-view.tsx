@@ -28,6 +28,24 @@ export const ComebackModeView: React.FC = () => {
 
 	// Show waiting message if game hasn't started or during results phase
 	if (!started || phase === 'results' || phase === 'ended') {
+		// Show all players folded notification (no winner this round)
+		if (myPlayer?.allPlayersFolded) {
+			return (
+				<div className="flex w-full max-w-2xl flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6 shadow-md">
+					<div className="text-center">
+						<div className="mb-4 rounded-lg border-2 border-gray-400 bg-gray-100 p-4">
+							<h3 className="mb-2 text-xl font-bold text-gray-700">
+								{config.comebackAllPlayersFoldedTitle}
+							</h3>
+							<p className="text-gray-600">{config.comebackAllPlayersFoldedMessage}</p>
+						</div>
+						<h2 className="mb-2 text-2xl font-bold">{config.comebackModeTitle}</h2>
+						<p className="text-gray-600">{config.comebackWaitingMessage}</p>
+					</div>
+				</div>
+			);
+		}
+
 		// Show failed prediction message if applicable
 		if (myPlayer?.failedComebackPrediction) {
 			return (

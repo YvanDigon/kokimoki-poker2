@@ -48,10 +48,11 @@ export const playerActions = {
 					muggedAmount: 0,
 					hasMugged: false,
 					inComebackMode: false,
-				comebackPrediction: '',
-				justReturnedFromComeback: false,
-			failedComebackPrediction: false
-			};
+					comebackPrediction: '',
+					justReturnedFromComeback: false,
+					failedComebackPrediction: false,
+					allPlayersFolded: false
+				};
 		}
 	);
 },

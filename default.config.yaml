@@ -37,6 +37,26 @@ gameLinksTitle: 'Game Links'
 playerLinkLabel: 'Player Link'
 presenterLinkLabel: 'Presenter Link'
 
+hostInstructionsTitle: 'How to Host'
+hostInstructionsMd: |
+  # Welcome to Red Handed Poker!
+
+  As the host, you lead the game. Here's what to do:
+
+  1. **Wait for players to join.** Share the player link with them.
+
+  2. **Start the game** when everyone is ready.
+
+  3. **Each round has two phases:**
+     - **Betting Phase:** Players place bets based on their hand strength.
+     - **Results Phase:** The best hand wins the pot.
+
+  4. **Watch for cheaters!** Players can secretly cheat and accuse others. Discuss with them to determine who's guilty, then punish the cheaters.
+
+  5. **End the game anytime.** Final rankings are determined by each player's gold balance.
+
+hostInstructionsButton: 'Info'
+
 menuAriaLabel: 'Open menu drawer'
 
 bettingPhaseTitle: 'Betting Phase'
@@ -164,6 +184,8 @@ comebackSuccessTitle: '🎉 Correct Prediction!'
 comebackSuccessMessage: 'You predicted correctly! You''re back in the game with {amount} gold.'
 comebackFailedTitle: '❌ Wrong Prediction'
 comebackFailedMessage: 'You incorrectly predicted the winner. Better luck next round!'
+comebackAllPlayersFoldedTitle: '⚪ No Winner'
+comebackAllPlayersFoldedMessage: 'No players placed bets this round. You don''t come back into play.'
 comebackPredictingLabel: 'Predicting:'
 
 finalRankingsTitle: 'Final Rankings'

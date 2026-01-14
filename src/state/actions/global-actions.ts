@@ -42,7 +42,8 @@ export const globalActions = {
 				inComebackMode: false,
 				comebackPrediction: '',
 				justReturnedFromComeback: false,
-				failedComebackPrediction: false
+				failedComebackPrediction: false,
+				allPlayersFolded: false
 			};
 		}
 
@@ -152,6 +153,7 @@ export const globalActions = {
 			globalState.players[playerId].comebackPrediction = '';
 			globalState.players[playerId].justReturnedFromComeback = false;
 			globalState.players[playerId].failedComebackPrediction = false;
+			globalState.players[playerId].allPlayersFolded = false;
 			// Note: inComebackMode persists across rounds
 		}			globalState.remainingDeck = fullDeck;
 			
@@ -383,6 +385,14 @@ export const globalActions = {
 				}
 
 				globalState.winners = winners;
+			} else {
+				// All players folded - mark comeback players with allPlayersFolded flag
+				const comebackPlayers = Object.keys(globalState.players).filter(
+					playerId => globalState.players[playerId].inComebackMode
+				);
+				for (const playerId of comebackPlayers) {
+					globalState.players[playerId].allPlayersFolded = true;
+				}
 			}
 
 		// Check for eliminated players (0 gold) and distribute elimination bonus
@@ -511,7 +521,8 @@ async startNewGame() {
 				inComebackMode: false,
 				comebackPrediction: '',
 				justReturnedFromComeback: false,
-				failedComebackPrediction: false
+				failedComebackPrediction: false,
+				allPlayersFolded: false
 		};
 	}
 });

@@ -35,6 +35,21 @@ export const schema = z.object({
 	playerLinkLabel: z.string().default('Player Link'),
 	presenterLinkLabel: z.string().default('Presenter Link'),
 
+	hostInstructionsTitle: z.string().default('How to Host'),
+	hostInstructionsMd: z
+		.string()
+		.default(
+			`# Welcome to Red Handed Poker!\n\nAs the host, you lead the game. Here's what to do:\n\n` +
+			`1. **Wait for players to join.** Share the player link with them.\n\n` +
+			`2. **Start the game** when everyone is ready.\n\n` +
+			`3. **Each round has two phases:**\n` +
+			`   - **Betting Phase:** Players place bets based on their hand strength.\n` +
+			`   - **Results Phase:** The best hand wins the pot.\n\n` +
+			`4. **Watch for cheaters!** Players can secretly cheat and accuse others. Discuss with them to determine who's guilty, then punish the cheaters.\n\n` +
+			`5. **End the game anytime.** Final rankings are determined by each player's gold balance.`
+		),
+	hostInstructionsButton: z.string().default('Info'),
+
 	menuAriaLabel: z.string().default('Open menu drawer'),
 
 	// Poker-specific
@@ -158,6 +173,8 @@ export const schema = z.object({
 	comebackSuccessMessage: z.string().default('You predicted correctly! You\'re back in the game with {amount} gold.'),
 	comebackFailedTitle: z.string().default('❌ Wrong Prediction'),
 	comebackFailedMessage: z.string().default('You incorrectly predicted the winner. Better luck next round!'),
+	comebackAllPlayersFoldedTitle: z.string().default('⚪ No Winner'),
+	comebackAllPlayersFoldedMessage: z.string().default('No players placed bets this round. You don\'t come back into play.'),
 	comebackPredictingLabel: z.string().default('Predicting:'),
 	
 	finalRankingsTitle: z.string().default('Final Rankings'),

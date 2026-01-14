@@ -30,7 +30,11 @@ export const ResultsView: React.FC = () => {
 	// Check if player had a comeback prediction but it was wrong
 	const hadFailedComeback = myPlayer.comebackPrediction && 
 		!winners.includes(myPlayer.comebackPrediction) && 
-		myPlayer.inComebackMode;
+		myPlayer.inComebackMode &&
+		!myPlayer.allPlayersFolded;
+	
+	// Check if all players folded
+	const allPlayersFolded = myPlayer.allPlayersFolded && myPlayer.inComebackMode;
 	
 	// Check if at least one cheater was actually caught (not wrongly accused)
 	const anyCheaterCaught = Object.values(players).some(
@@ -42,6 +46,22 @@ export const ResultsView: React.FC = () => {
 	const totalLost = myBet + config.minimalBet; // Total amount lost (bet + minimal bet)
 	const winnings = isWinner && !myPlayer.folded ? Math.floor(pot / winners.length) : 0;
 	const netChange = winnings - totalLost;
+
+	// Show all players folded notification for comeback players (highest priority)
+	if (allPlayersFolded) {
+		return (
+			<div className="flex w-full max-w-2xl flex-col gap-6">
+				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
+					<h3 className="mb-2 text-center text-xl font-bold text-gray-600">
+						{config.comebackAllPlayersFoldedTitle}
+					</h3>
+					<p className="text-center text-gray-700">
+						{config.comebackAllPlayersFoldedMessage}
+					</p>
+				</div>
+			</div>
+		);
+	}
 
 	// Show comeback mode entry message
 	if (justEnteredComebackMode) {
