@@ -2,7 +2,7 @@ import { kmClient } from '@/services/km-client';
 
 export interface PlayerState {
 	name: string;
-	currentView: 'lobby' | 'betting' | 'results' | 'connections';
+	currentView: 'lobby' | 'betting' | 'results' | 'connections' | 'comeback';
 	selectedCardIndices: number[];
 	cardTaps: Record<number, number>;
 	cheatMode: boolean;

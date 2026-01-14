@@ -1,4 +1,5 @@
 import type { Card as GlobalCard } from '@/state/stores/global-store';
+import { config } from '@/config';
 
 export type Card = GlobalCard;
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
@@ -83,53 +84,53 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
 
 	// Royal Flush
 	if (isFlush && isStraight && rankValues[0] === 14 && rankValues[4] === 10) {
-		return { rank: 10, name: 'Royal Flush', tiebreakers: [] };
+		return { rank: 10, name: config.handNameRoyalFlush, tiebreakers: [] };
 	}
 
 	// Straight Flush
 	if (isFlush && (isStraight || isLowStraight)) {
 		const high = isLowStraight ? 5 : rankValues[0];
-		return { rank: 9, name: 'Straight Flush', tiebreakers: [high] };
+		return { rank: 9, name: config.handNameStraightFlush, tiebreakers: [high] };
 	}
 
 	// Four of a Kind
 	if (counts[0] === 4) {
-		return { rank: 8, name: 'Four of a Kind', tiebreakers: uniqueRanks };
+		return { rank: 8, name: config.handNameFourOfAKind, tiebreakers: uniqueRanks };
 	}
 
 	// Full House
 	if (counts[0] === 3 && counts[1] === 2) {
-		return { rank: 7, name: 'Full House', tiebreakers: uniqueRanks };
+		return { rank: 7, name: config.handNameFullHouse, tiebreakers: uniqueRanks };
 	}
 
 	// Flush
 	if (isFlush) {
-		return { rank: 6, name: 'Flush', tiebreakers: rankValues };
+		return { rank: 6, name: config.handNameFlush, tiebreakers: rankValues };
 	}
 
 	// Straight
 	if (isStraight || isLowStraight) {
 		const high = isLowStraight ? 5 : rankValues[0];
-		return { rank: 5, name: 'Straight', tiebreakers: [high] };
+		return { rank: 5, name: config.handNameStraight, tiebreakers: [high] };
 	}
 
 	// Three of a Kind
 	if (counts[0] === 3) {
-		return { rank: 4, name: 'Three of a Kind', tiebreakers: uniqueRanks };
+		return { rank: 4, name: config.handNameThreeOfAKind, tiebreakers: uniqueRanks };
 	}
 
 	// Two Pair
 	if (counts[0] === 2 && counts[1] === 2) {
-		return { rank: 3, name: 'Two Pair', tiebreakers: uniqueRanks };
+		return { rank: 3, name: config.handNameTwoPair, tiebreakers: uniqueRanks };
 	}
 
 	// One Pair
 	if (counts[0] === 2) {
-		return { rank: 2, name: 'One Pair', tiebreakers: uniqueRanks };
+		return { rank: 2, name: config.handNameOnePair, tiebreakers: uniqueRanks };
 	}
 
 	// High Card
-	return { rank: 1, name: 'High Card', tiebreakers: rankValues };
+	return { rank: 1, name: config.handNameHighCard, tiebreakers: rankValues };
 }
 
 /**
@@ -199,27 +200,27 @@ export function getHandQuality(evaluation: HandEvaluation): { text: string; emoj
 	// Rank 1 = High Card, Rank 10 = Royal Flush
 	switch (evaluation.rank) {
 		case 1: // High Card
-			return { text: 'Bad hand', emoji: '😞' };
+			return { text: config.handQualityHighCard, emoji: '😞' };
 		case 2: // One Pair
-			return { text: 'Meh hand', emoji: '😐' };
+			return { text: config.handQualityOnePair, emoji: '😐' };
 		case 3: // Two Pair
-			return { text: 'Good hand', emoji: '😊' };
+			return { text: config.handQualityTwoPair, emoji: '😊' };
 		case 4: // Three of a Kind
-			return { text: 'Nice hand', emoji: '😄' };
+			return { text: config.handQualityThreeOfAKind, emoji: '😄' };
 		case 5: // Straight
-			return { text: 'Great hand', emoji: '🙂' };
+			return { text: config.handQualityStraight, emoji: '🙂' };
 		case 6: // Flush
-			return { text: 'Strong hand', emoji: '💪' };
+			return { text: config.handQualityFlush, emoji: '💪' };
 		case 7: // Full House
-			return { text: 'Excellent hand', emoji: '😃' };
+			return { text: config.handQualityFullHouse, emoji: '😃' };
 		case 8: // Four of a Kind
-			return { text: 'Incredible hand', emoji: '🤩' };
+			return { text: config.handQualityFourOfAKind, emoji: '🤩' };
 		case 9: // Straight Flush
-			return { text: 'Amazing hand', emoji: '🔥' };
+			return { text: config.handQualityStraightFlush, emoji: '🔥' };
 		case 10: // Royal Flush
-			return { text: 'Legendary hand', emoji: '👑' };
+			return { text: config.handQualityRoyalFlush, emoji: '👑' };
 		default:
-			return { text: 'Unknown hand', emoji: '❓' };
+			return { text: config.handQualityUnknown, emoji: '❓' };
 	}
 }
 

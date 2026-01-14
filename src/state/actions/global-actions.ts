@@ -38,7 +38,11 @@ export const globalActions = {
 				botchedCheating: false,
 				muggedVictimId: '',
 				muggedAmount: 0,
-				hasMugged: false
+				hasMugged: false,
+				inComebackMode: false,
+				comebackPrediction: '',
+				justReturnedFromComeback: false,
+				failedComebackPrediction: false
 			};
 		}
 
@@ -95,19 +99,13 @@ export const globalActions = {
 				.filter(([id, _]) => !globalState.winners.includes(id))
 				.map(([id, _]) => id);
 			
-			// Filter out any eliminated players from losing players list
-			const remainingLosingPlayers = losingPlayers.filter(id => {
-				const player = globalState.players[id];
-				return player && player.gold > 0;
-			});
-			
-			globalState.losingPlayersLastRound = remainingLosingPlayers;
-			
-			console.log('[startNewRound] Losing players (will see cheat tip):', remainingLosingPlayers.map(id => ({
-				id,
-				name: globalState.players[id]?.name,
-				gold: globalState.players[id]?.gold
-			})));
+		// Filter out any eliminated players and players who just returned from comeback mode
+		const remainingLosingPlayers = losingPlayers.filter(id => {
+			const player = globalState.players[id];
+			return player && player.gold > 0 && !player.justReturnedFromComeback;
+		});
+		
+		globalState.losingPlayersLastRound = remainingLosingPlayers;
 
 		globalState.phase = 'betting';
 		globalState.roundNumber += 1;
@@ -115,27 +113,26 @@ export const globalActions = {
 		globalState.winners = [];
 		globalState.bettingPhaseStartTime = kmClient.serverTimestamp();
 		globalState.punishmentUsedThisRound = false;
-		globalState.suspectedCheaters = {};			// Remove eliminated players (0 gold)
-			const playerIds = Object.keys(globalState.players);
-			for (const playerId of playerIds) {
-				if (globalState.players[playerId].gold <= 0) {
-					delete globalState.players[playerId];
-				}
-			}
+		globalState.suspectedCheaters = {};
 
-			// Reset player states and deal new cards
-			const remainingPlayers = Object.keys(globalState.players);
+			// Don't remove players in comeback mode, keep them for predictions
+			// Only remove players who left the game completely (no entry at all would be handled differently)
+			
+			// Reset player states and deal new cards (only for active players, not comeback mode)
+			const activePlayers = Object.keys(globalState.players).filter(
+				playerId => !globalState.players[playerId].inComebackMode
+			);
 			
 			// Create and shuffle new deck
-			const numDecks = Math.ceil(remainingPlayers.length / 10);
+			const numDecks = Math.ceil(activePlayers.length / 10);
 			let fullDeck: Card[] = [];
 			for (let i = 0; i < numDecks; i++) {
 				fullDeck = fullDeck.concat(createDeck());
 			}
 			fullDeck = shuffleDeck(fullDeck);
 
-		// Deal cards and reset state
-		for (const playerId of remainingPlayers) {
+		// Deal cards and reset state for active players only
+		for (const playerId of activePlayers) {
 			globalState.players[playerId].cards = fullDeck.splice(0, 5);
 			globalState.players[playerId].bet = 0;
 			globalState.players[playerId].folded = false;
@@ -152,10 +149,14 @@ export const globalActions = {
 			globalState.players[playerId].muggedVictimId = '';
 			globalState.players[playerId].muggedAmount = 0;
 			globalState.players[playerId].hasMugged = false;
+			globalState.players[playerId].comebackPrediction = '';
+			globalState.players[playerId].justReturnedFromComeback = false;
+			globalState.players[playerId].failedComebackPrediction = false;
+			// Note: inComebackMode persists across rounds
 		}			globalState.remainingDeck = fullDeck;
 			
-			// Deduct minimal bet from all remaining players and add to pot
-			for (const playerId of remainingPlayers) {
+			// Deduct minimal bet from all active players and add to pot
+			for (const playerId of activePlayers) {
 				const player = globalState.players[playerId];
 				if (player.gold >= config.minimalBet) {
 					player.gold -= config.minimalBet;
@@ -386,7 +387,7 @@ export const globalActions = {
 
 		// Check for eliminated players (0 gold) and distribute elimination bonus
 		const eliminatedPlayers = Object.keys(globalState.players).filter(
-			playerId => globalState.players[playerId].gold <= 0
+			playerId => globalState.players[playerId].gold <= 0 && !globalState.players[playerId].inComebackMode
 		);
 
 		console.log('[endBettingPhase] Eliminated players:', eliminatedPlayers.map(id => ({
@@ -396,11 +397,17 @@ export const globalActions = {
 		})));
 
 		if (eliminatedPlayers.length > 0) {
-			// Get all players who bet this round (not folded, not eliminated)
+			// Mark eliminated players as in comeback mode and reset their bet
+			for (const playerId of eliminatedPlayers) {
+				globalState.players[playerId].inComebackMode = true;
+				globalState.players[playerId].bet = 0; // Reset bet when entering comeback mode
+			}
+			
+			// Get all active players who bet this round (not folded, not eliminated, not in comeback mode)
 			const bettingPlayers = Object.keys(globalState.players).filter(
 				playerId => {
 					const player = globalState.players[playerId];
-					return !player.folded && player.bet > 0 && !eliminatedPlayers.includes(playerId);
+					return !player.folded && player.bet > 0 && !eliminatedPlayers.includes(playerId) && !player.inComebackMode;
 				}
 			);
 
@@ -420,8 +427,43 @@ export const globalActions = {
 				globalState.players[playerId].receivedEliminationBonus = true;
 			}
 		}
-
-		globalState.phase = 'results';
+		
+		// Process comeback mode predictions
+		if (globalState.winners.length > 0) {
+			const winnerIds = new Set(globalState.winners);
+			const comebackPlayers = Object.keys(globalState.players).filter(
+				playerId => globalState.players[playerId].inComebackMode
+			);
+			
+			for (const playerId of comebackPlayers) {
+				const player = globalState.players[playerId];
+				if (player.comebackPrediction) {
+					if (winnerIds.has(player.comebackPrediction)) {
+						// Correct prediction! Calculate winnings (split pot equally among winners)
+						const winnings = Math.floor(globalState.pot / globalState.winners.length);
+						player.gold = winnings;
+						player.inComebackMode = false;
+						player.comebackPrediction = '';
+						player.justReturnedFromComeback = true;
+						player.failedComebackPrediction = false;
+					} else {
+						// Wrong prediction
+						player.failedComebackPrediction = true;
+					}
+				}
+			}
+		}
+		
+		// Check if only 1 or 0 active players remain (game over condition)
+		const remainingActivePlayers = Object.keys(globalState.players).filter(
+			playerId => !globalState.players[playerId].inComebackMode
+		);
+		
+		if (remainingActivePlayers.length <= 1) {
+			globalState.phase = 'ended';
+		} else {
+			globalState.phase = 'results';
+		}
 	});
 },
 
@@ -465,17 +507,19 @@ async startNewGame() {
 					botchedCheating: false,
 					muggedVictimId: '',
 					muggedAmount: 0,
-					hasMugged: false
-				};
-			}
-		});
-	},
-
+				hasMugged: false,
+				inComebackMode: false,
+				comebackPrediction: '',
+				justReturnedFromComeback: false,
+				failedComebackPrediction: false
+		};
+	}
+});
+},
 	async resetPlayers() {
 		await kmClient.transact([globalStore], ([globalState]) => {
-			// Remove all players and clear eliminated players list
+			// Remove all players
 			globalState.players = {};
-			globalState.eliminatedPlayers = [];
 		});
 	},
 
@@ -597,11 +641,11 @@ async startNewGame() {
 
 			// Second pass: distribute confiscated gold among betting players
 			if (totalConfiscatedGold > 0) {
-				// Get all betting players who are not folded, not eliminated, and not rightfully accused cheaters
+				// Get all betting players who are not folded, not eliminated, not in comeback mode, and not rightfully accused cheaters
 				const eligiblePlayers = Object.keys(globalState.players).filter(
 					(id) => {
 						const p = globalState.players[id];
-						return !p.folded && p.bet > 0 && p.gold > 0 && !rightfullyAccusedIds.has(id);
+						return !p.folded && p.bet > 0 && p.gold > 0 && !rightfullyAccusedIds.has(id) && !p.inComebackMode;
 					}
 				);
 
@@ -666,5 +710,14 @@ async executeMug(muggerId: string, victimId: string) {
 	});
 	
 	return result;
+},
+
+async setComebackPrediction(clientId: string, predictedWinnerId: string) {
+	await kmClient.transact([globalStore], ([globalState]) => {
+		const player = globalState.players[clientId];
+		if (!player || !player.inComebackMode) return;
+		
+		player.comebackPrediction = predictedWinnerId;
+	});
 }
 };

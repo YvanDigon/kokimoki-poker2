@@ -41,7 +41,7 @@ const App: React.FC = () => {
 					<div className="flex-1">
 						<h1 className="text-6xl font-bold">{config.title}</h1>
 						<p className="mt-2 text-xl font-semibold text-red-600">
-							⚠️ Cheating is forbidden! Get caught and face the consequences! 🎭
+							{config.importantNoteText}
 						</p>
 					</div>
 				</div>

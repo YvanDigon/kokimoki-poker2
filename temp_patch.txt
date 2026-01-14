@@ -1,0 +1,29 @@
+Apply these changes:
+
+1. Add to schema.ts after line with comebackModePresenterDescription:
+	comebackBankruptTitle: z.string().default('💸 Busted!'),
+	comebackBankruptMessage: z.string().default('You\'re out of gold and entered Comeback Mode. Predict the next round\'s winner correctly to get back in the game!'),
+
+2. Add to default.config.yaml after comebackModePresenterDescription line:
+comebackBankruptTitle: '💸 Busted!'
+comebackBankruptMessage: 'You''re out of gold and entered Comeback Mode. Predict the next round''s winner correctly to get back in the game!'
+
+3. In comeback-mode-view.tsx, after the failedComebackPrediction block, add:
+		
+		// Show bankrupt notification if just entered comeback mode (no prediction made yet)
+		if (!myPlayer?.comebackPrediction && !myPlayer?.failedComebackPrediction) {
+			return (
+				<div className="flex w-full max-w-2xl flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6 shadow-md">
+					<div className="text-center">
+						<div className="mb-4 rounded-lg border-2 border-orange-500 bg-orange-50 p-4">
+							<h3 className="mb-2 text-xl font-bold text-orange-700">
+								{config.comebackBankruptTitle}
+							</h3>
+							<p className="text-orange-600">{config.comebackBankruptMessage}</p>
+						</div>
+						<h2 className="mb-2 text-2xl font-bold">{config.comebackModeTitle}</h2>
+						<p className="text-gray-600">{config.comebackWaitingMessage}</p>
+					</div>
+				</div>
+			);
+		}

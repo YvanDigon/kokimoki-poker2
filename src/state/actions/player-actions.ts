@@ -46,13 +46,17 @@ export const playerActions = {
 					botchedCheating: false,
 					muggedVictimId: '',
 					muggedAmount: 0,
-					hasMugged: false
-				};
-			}
-		);
-	},
+					hasMugged: false,
+					inComebackMode: false,
+				comebackPrediction: '',
+				justReturnedFromComeback: false,
+			failedComebackPrediction: false
+			};
+		}
+	);
+},
 
-	async clearPlayerName() {
+async clearPlayerName() {
 		await kmClient.transact([playerStore], ([playerState]) => {
 			playerState.name = '';
 		});
@@ -77,25 +81,6 @@ export const playerActions = {
 		await kmClient.transact([playerStore], ([playerState]) => {
 			playerState.selectedCardIndices = [];
 		});
-	},
-
-	async rejoinGame() {
-		await kmClient.transact(
-			[playerStore, globalStore],
-			([playerState, globalState]) => {
-				// Store the eliminated player's name for presenter display
-				if (playerState.name && !globalState.eliminatedPlayers.includes(playerState.name)) {
-					globalState.eliminatedPlayers.push(playerState.name);
-				}
-				
-				// Clear local name so player goes through name entry again
-				playerState.name = '';
-				
-				// Note: The old player entry in globalState.players will be removed when they
-				// create a new player with a new name. The eliminated name is preserved in
-				// eliminatedPlayers array for presenter display until host resets.
-			}
-		);
 	},
 
 	async tapCard(index: number) {

@@ -151,8 +151,8 @@ if (phase === 'betting') {
 	if (phase === 'ended') {
 		return (
 			<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
-				<h2 className="mb-4 text-xl font-bold">{config.gameOver}</h2>
-				<p className="mb-4 text-center text-gray-600">{config.finalRankingsTitle}</p>
+				<h2 className="mb-4 text-xl font-bold">{config.finalRankingsTitle}</h2>
+				<p className="mb-4 text-center text-gray-600">The game has ended!</p>
 				<div className="space-y-2">
 					<button
 						onClick={handleResetPlayers}

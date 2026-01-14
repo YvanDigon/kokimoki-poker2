@@ -3,12 +3,10 @@ import { DenounceCheaterModal } from '@/components/denounce-cheaters-modal';
 import { HandRankingsModal } from '@/components/hand-rankings-modal';
 import { PlayingCard } from '@/components/playing-card';
 import { kmClient } from '@/services/km-client';
-import { playerActions } from '@/state/actions/player-actions';
 import { globalStore, type PlayerData } from '@/state/stores/global-store';
 import { playerStore } from '@/state/stores/player-store';
 import { getGoldEmoji } from '@/utils/gold-emoji';
 import * as React from 'react';
-import ReactMarkdown from 'react-markdown';
 import { useSnapshot } from 'valtio';
 
 export const ResultsView: React.FC = () => {
@@ -21,8 +19,18 @@ export const ResultsView: React.FC = () => {
 
 	const isWinner = winners.includes(kmClient.id);
 	const myGold = myPlayer.gold;
-	const isEliminated = myGold <= 0;
 	const wasAccused = myPlayer.accusedOfCheating;
+	
+	// Check if player just entered comeback mode
+	const justEnteredComebackMode = myPlayer.inComebackMode && myGold <= 0;
+	
+	// Check if player had a comeback prediction and it was correct
+	const hadSuccessfulComeback = myPlayer.justReturnedFromComeback;
+	
+	// Check if player had a comeback prediction but it was wrong
+	const hadFailedComeback = myPlayer.comebackPrediction && 
+		!winners.includes(myPlayer.comebackPrediction) && 
+		myPlayer.inComebackMode;
 	
 	// Check if at least one cheater was actually caught (not wrongly accused)
 	const anyCheaterCaught = Object.values(players).some(
@@ -35,29 +43,40 @@ export const ResultsView: React.FC = () => {
 	const winnings = isWinner && !myPlayer.folded ? Math.floor(pot / winners.length) : 0;
 	const netChange = winnings - totalLost;
 
-	const handleRejoin = async () => {
-		await playerActions.rejoinGame();
-	};
-
-	if (isEliminated) {
+	// Show comeback mode entry message
+	if (justEnteredComebackMode) {
 		return (
 			<div className="flex w-full max-w-2xl flex-col gap-6">
-				<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
-					<h2 className="mb-4 text-center text-3xl font-bold text-red-600">
-						{config.gameOver}
+				<div className="rounded-lg border-2 border-blue-600 bg-white p-6 shadow-lg">
+					<h2 className="mb-4 text-center text-3xl font-bold text-blue-600">
+						{config.comebackModeTitle}
 					</h2>
 
 					<div className="prose prose-sm mb-6 max-w-none text-center">
-						<ReactMarkdown>{config.gameOverMd}</ReactMarkdown>
+						<p className="text-gray-700">{config.comebackModeDescription}</p>
 					</div>
+				</div>
+			</div>
+		);
+	}
 
-					<button
-						onClick={handleRejoin}
-						type="button"
-						className="w-full rounded-lg bg-green-600 px-4 py-3 font-bold text-white hover:bg-green-700"
-					>
-						{config.rejoinButton}
-					</button>
+	// Show simplified view for successful comeback (no round details, they didn't play)
+	if (hadSuccessfulComeback) {
+		return (
+			<div className="flex w-full max-w-2xl flex-col gap-6">
+				<div className="rounded-lg border-2 border-green-600 bg-green-50 p-6 shadow-lg">
+					<h3 className="mb-4 text-center text-3xl font-bold text-green-600">
+						{config.comebackSuccessTitle}
+					</h3>
+					<p className="mb-4 text-center text-lg text-green-700">
+						{config.comebackSuccessMessage.replace('{amount}', myGold.toString())}
+					</p>
+					<div className="rounded-lg bg-white p-4 text-center">
+						<p className="text-xl font-bold flex items-center justify-center gap-2">
+							<span>{config.yourGold}: <span className="text-green-600">{myGold}</span></span>
+							{myGold > 0 && <span>{getGoldEmoji(myGold)}</span>}
+						</p>
+					</div>
 				</div>
 			</div>
 		);
@@ -65,6 +84,18 @@ export const ResultsView: React.FC = () => {
 
 	return (
 		<div className="flex w-full max-w-2xl flex-col gap-6">
+			{/* Failed Comeback Notification */}
+			{hadFailedComeback && (
+				<div className="rounded-lg border-2 border-red-600 bg-red-50 p-6 shadow-lg">
+					<h3 className="mb-2 text-center text-xl font-bold text-red-600">
+						{config.comebackFailedTitle}
+					</h3>
+					<p className="text-center text-red-700">
+						{config.comebackFailedMessage}
+					</p>
+				</div>
+			)}
+
 			{/* Redistributed Gold Notification */}
 			{myPlayer.receivedRedistributedGold && (
 				<div className="rounded-lg border-2 border-green-600 bg-green-50 p-6 shadow-lg">
@@ -86,14 +117,15 @@ export const ResultsView: React.FC = () => {
 				</div>
 			)}
 
+
 			{/* Elimination Bonus Notification */}
 			{myPlayer.receivedEliminationBonus && (
 				<div className="rounded-lg border-2 border-green-600 bg-green-50 p-6 shadow-lg">
 					<h3 className="mb-2 text-center text-xl font-bold text-green-600">
-						💰 Elimination Bonus!
+						{config.eliminationBonusTitle}
 					</h3>
 					<p className="text-center text-green-700">
-						A rival went broke! You earned {config.eliminationBonus} coins as a survivor's reward for staying in the game!
+						{config.eliminationBonusMessage.replace('{amount}', String(config.eliminationBonus))}
 					</p>
 				</div>
 			)}
@@ -102,10 +134,10 @@ export const ResultsView: React.FC = () => {
 			{!myPlayer.receivedEliminationBonus && myPlayer.folded && Object.values(players).some(p => p.receivedEliminationBonus) && (
 				<div className="rounded-lg border-2 border-gray-400 bg-gray-50 p-6 shadow-lg">
 					<h3 className="mb-2 text-center text-xl font-bold text-gray-600">
-						😔 Missed Opportunity
+						{config.eliminationMissedTitle}
 					</h3>
 					<p className="text-center text-gray-700">
-					A player went broke, but you folded early and missed out on the {config.eliminationBonus} coin survivor's bonus. Stay in the game to reap the rewards!
+						{config.eliminationMissedMessage.replace('{amount}', String(config.eliminationBonus))}
 					</p>
 				</div>
 			)}
@@ -114,10 +146,10 @@ export const ResultsView: React.FC = () => {
 			{myPlayer.muggedAmount > 0 && (
 				<div className="rounded-lg border-2 border-red-600 bg-red-50 p-6 shadow-lg">
 					<h3 className="mb-2 text-center text-xl font-bold text-red-600">
-						🎭 You've Been Mugged!
+						{config.muggedTitle}
 					</h3>
 					<p className="text-center text-red-700">
-						A mysterious player stole {myPlayer.muggedAmount} gold from you during the betting phase!
+						{config.muggedMessage.replace('{amount}', String(myPlayer.muggedAmount))}
 					</p>
 				</div>
 			)}
@@ -190,7 +222,7 @@ export const ResultsView: React.FC = () => {
 								{totalLost > 0 && <span>{getGoldEmoji(totalLost)}</span>}
 							</p>
 							<p className="text-xl font-bold flex items-center justify-center gap-2">
-								<span>Net: <span className={netChange >= 0 ? 'text-green-600' : 'text-red-600'}>
+								<span>{config.netLabel}: <span className={netChange >= 0 ? 'text-green-600' : 'text-red-600'}>
 									{netChange >= 0 ? '+' : ''}{netChange}
 								</span></span>
 								{netChange !== 0 && <span>{getGoldEmoji(Math.abs(netChange))}</span>}

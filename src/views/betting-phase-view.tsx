@@ -64,13 +64,15 @@ export const BettingPhaseView: React.FC = () => {
 	// Show tip if this player lost money in previous round and reset mug taps
 	React.useEffect(() => {
 		const isLosingPlayer = losingPlayersLastRound.includes(kmClient.id);
-		const shouldShowTip = roundNumber > 1 && isLosingPlayer;
+		const justCameBack = myPlayer?.justReturnedFromComeback || false;
+		const shouldShowTip = roundNumber > 1 && isLosingPlayer && !justCameBack;
 		
 		console.log('[BettingPhaseView] Effect triggered:', {
 			roundNumber,
 			losingPlayersLastRound: [...losingPlayersLastRound],
 			myId: kmClient.id,
 			isLosingPlayer,
+			justCameBack,
 			shouldShowTip
 		});
 		
@@ -204,7 +206,7 @@ export const BettingPhaseView: React.FC = () => {
 							return (
 								<div className="mb-3 text-center">
 									<span className="text-lg font-bold text-red-600">
-										🚨 Cheater hand
+										{config.cheaterHand}
 									</span>
 								</div>
 							);
@@ -249,7 +251,7 @@ export const BettingPhaseView: React.FC = () => {
 					<p className="text-lg">
 						{config.currentBet}: <span className="font-bold">{myPlayer.bet}</span>
 					</p>
-					<p className="mt-2 text-gray-500">Waiting for round to end...</p>
+					<p className="mt-2 text-gray-500">{config.waitingForRoundEnd}</p>
 					{myPlayer.hasMugged && (
 						<p className="mt-2 text-sm text-red-600 font-semibold">
 							{config.muggingInProgress}

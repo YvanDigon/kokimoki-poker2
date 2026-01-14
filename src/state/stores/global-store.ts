@@ -19,7 +19,6 @@ export interface GlobalState {
 	winners: string[];
 	punishmentUsedThisRound: boolean;
 	losingPlayersLastRound: string[];
-	eliminatedPlayers: string[];
 	suspectedCheaters: Record<string, string[]>;
 }
 
@@ -42,6 +41,10 @@ export interface PlayerData {
 	muggedVictimId: string;
 	muggedAmount: number;
 	hasMugged: boolean;
+	inComebackMode: boolean;
+	comebackPrediction: string;
+	justReturnedFromComeback: boolean;
+	failedComebackPrediction: boolean;
 }
 
 const initialState: GlobalState = {
@@ -57,7 +60,6 @@ const initialState: GlobalState = {
 	winners: [],
 	punishmentUsedThisRound: false,
 	losingPlayersLastRound: [],
-	eliminatedPlayers: [],
 	suspectedCheaters: {}
 };
 

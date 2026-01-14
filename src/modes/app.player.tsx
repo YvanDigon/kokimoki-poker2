@@ -8,6 +8,7 @@ import { playerActions } from '@/state/actions/player-actions';
 import { globalStore } from '@/state/stores/global-store';
 import { playerStore } from '@/state/stores/player-store';
 import { BettingPhaseView } from '@/views/betting-phase-view';
+import { ComebackModeView } from '@/views/comeback-mode-view';
 import { ConnectionsView } from '@/views/connections-view';
 import { CreateProfileView } from '@/views/create-profile-view';
 import { GameLobbyView } from '@/views/game-lobby-view';
@@ -25,8 +26,17 @@ const App: React.FC = () => {
 	useDocumentTitle(title);
 
 	React.useEffect(() => {
-		// Update view based on game phase
+		// Update view based on game phase and player state
 		if (started) {
+			const myPlayer = players[kmClient.id];
+			
+			// If player is in comeback mode, always show comeback view
+			if (myPlayer?.inComebackMode) {
+				playerActions.setCurrentView('comeback');
+				return;
+			}
+			
+			// Otherwise route based on phase
 			if (phase === 'betting') {
 				playerActions.setCurrentView('betting');
 			} else if (phase === 'results' || phase === 'ended') {
@@ -35,7 +45,7 @@ const App: React.FC = () => {
 		} else {
 			playerActions.setCurrentView('lobby');
 		}
-	}, [started, phase]);
+	}, [started, phase, players]);
 
 	React.useEffect(() => {
 		// If player has been removed from global players list, clear local name
@@ -77,6 +87,7 @@ const App: React.FC = () => {
 				<PlayerLayout.Main>
 					{currentView === 'betting' && <BettingPhaseView />}
 					{currentView === 'results' && <ResultsView />}
+					{currentView === 'comeback' && <ComebackModeView />}
 				</PlayerLayout.Main>
 
 				<PlayerLayout.Footer>

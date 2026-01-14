@@ -4,16 +4,16 @@ import { useKmModal } from '@kokimoki/shared';
 import * as React from 'react';
 
 const handRankings = [
-	{ rank: 10, name: 'Royal Flush', example: 'A♠ K♠ Q♠ J♠ 10♠', description: 'A, K, Q, J, 10, all of the same suit' },
-	{ rank: 9, name: 'Straight Flush', example: '9♥ 8♥ 7♥ 6♥ 5♥', description: 'Five cards in sequence, all of the same suit' },
-	{ rank: 8, name: 'Four of a Kind', example: 'K♠ K♥ K♦ K♣ 3♠', description: 'Four cards with the same rank' },
-	{ rank: 7, name: 'Full House', example: 'Q♠ Q♥ Q♦ 8♣ 8♠', description: 'Three cards of one rank and two cards of another rank' },
-	{ rank: 6, name: 'Flush', example: 'J♦ 9♦ 7♦ 4♦ 2♦', description: 'Five cards of the same suit, not in sequence' },
-	{ rank: 5, name: 'Straight', example: '10♠ 9♥ 8♦ 7♣ 6♠', description: 'Five cards in sequence, not all of the same suit' },
-	{ rank: 4, name: 'Three of a Kind', example: '7♠ 7♥ 7♦ K♣ 3♠', description: 'Three cards with the same rank' },
-	{ rank: 3, name: 'Two Pair', example: 'J♠ J♥ 5♦ 5♣ 2♠', description: 'Two cards of one rank and two cards of another rank' },
-	{ rank: 2, name: 'One Pair', example: '10♠ 10♥ K♦ 8♣ 3♠', description: 'Two cards with the same rank' },
-	{ rank: 1, name: 'High Card', example: 'A♠ J♥ 9♦ 6♣ 3♠', description: 'No matching cards, highest card wins' }
+	{ rank: 10, name: config.handNameRoyalFlush, example: config.handExampleRoyalFlush, description: config.handDescRoyalFlush },
+	{ rank: 9, name: config.handNameStraightFlush, example: config.handExampleStraightFlush, description: config.handDescStraightFlush },
+	{ rank: 8, name: config.handNameFourOfAKind, example: config.handExampleFourOfAKind, description: config.handDescFourOfAKind },
+	{ rank: 7, name: config.handNameFullHouse, example: config.handExampleFullHouse, description: config.handDescFullHouse },
+	{ rank: 6, name: config.handNameFlush, example: config.handExampleFlush, description: config.handDescFlush },
+	{ rank: 5, name: config.handNameStraight, example: config.handExampleStraight, description: config.handDescStraight },
+	{ rank: 4, name: config.handNameThreeOfAKind, example: config.handExampleThreeOfAKind, description: config.handDescThreeOfAKind },
+	{ rank: 3, name: config.handNameTwoPair, example: config.handExampleTwoPair, description: config.handDescTwoPair },
+	{ rank: 2, name: config.handNameOnePair, example: config.handExampleOnePair, description: config.handDescOnePair },
+	{ rank: 1, name: config.handNameHighCard, example: config.handExampleHighCard, description: config.handDescHighCard }
 ];
 
 interface HandRankingsContentProps {

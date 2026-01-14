@@ -8,18 +8,23 @@ import * as React from 'react';
 import { useSnapshot } from 'valtio';
 
 export const PresenterGameView: React.FC = () => {
-	const { phase, roundNumber, pot, players, winners, bettingPhaseStartTime, eliminatedPlayers, suspectedCheaters } = useSnapshot(globalStore.proxy);
+	const { phase, roundNumber, pot, players, winners, bettingPhaseStartTime, suspectedCheaters } = useSnapshot(globalStore.proxy);
 	const serverTime = useServerTimer(250);
 
 	const playerEntries = Object.entries(players);
+	
+	// Get comeback mode players
+	const comebackPlayers = playerEntries.filter(([_, player]) => player.inComebackMode);
 	
 	// Calculate remaining time in betting phase (same as host)
 	const bettingTimeElapsed = serverTime - bettingPhaseStartTime;
 	const bettingTimeRemaining = Math.max(0, config.bettingPhaseDuration * 1000 - bettingTimeElapsed);
 
-	// Calculate current pot including all bets
+	// Calculate current pot including bets from active players only (exclude comeback mode players)
 	const currentPot = phase === 'betting' 
-		? pot + Object.values(players).reduce((sum, p) => sum + p.bet, 0)
+		? pot + Object.entries(players)
+			.filter(([_, player]) => !player.inComebackMode)
+			.reduce((sum, [_, p]) => sum + p.bet, 0)
 		: pot;
 
 	if (phase === 'betting') {
@@ -40,7 +45,7 @@ export const PresenterGameView: React.FC = () => {
 					</div>
 				</div>
 			</div>				<div className="grid grid-cols-3 gap-3">
-					{playerEntries.map(([playerId, player]) => {
+					{playerEntries.filter(([_, player]) => !player.inComebackMode).map(([playerId, player]) => {
 						const isAllIn = player.bet > 0 && player.bet === player.gold + player.bet;
 						
 						return (
@@ -81,14 +86,34 @@ export const PresenterGameView: React.FC = () => {
 							</div>
 						);
 					})}
+					
+					{/* Comeback Mode Players */}
+					{comebackPlayers.map(([playerId, player]) => (
+						<div
+							key={`comeback-${playerId}`}
+							className="rounded-lg border-2 border-blue-400 bg-blue-50 p-2"
+						>
+							<p className="mb-1 text-center text-sm font-bold truncate text-blue-800">
+								{player.name}
+							</p>
+							<p className="text-center text-xs text-blue-600">
+								{config.comebackModePresenterDescription}
+							</p>
+							{player.comebackPrediction && (
+								<p className="text-center text-xs text-blue-700 mt-1">
+									{config.comebackPredictingLabel} {players[player.comebackPrediction]?.name || '?'}
+								</p>
+							)}
+						</div>
+					))}
 				</div>
 			</div>
 		);
 	}
 
 	if (phase === 'results' || phase === 'ended') {
-		// Sort players: winners first, then by hand rank, then by gold
-		const sortedPlayers = [...playerEntries].sort(([aId, a], [bId, b]) => {
+		// Sort active players (exclude comeback mode): winners first, then by hand rank, then by gold
+		const sortedPlayers = [...playerEntries].filter(([_, player]) => !player.inComebackMode).sort(([aId, a], [bId, b]) => {
 			const aIsWinner = winners.includes(aId);
 			const bIsWinner = winners.includes(bId);
 			if (aIsWinner && !bIsWinner) return -1;
@@ -97,10 +122,10 @@ export const PresenterGameView: React.FC = () => {
 			return b.gold - a.gold;
 		});
 
-		// Find duplicate cards across all players who bet
+		// Find duplicate cards across all active players who bet (not comeback mode)
 		const cardCounts = new Map<string, number>();
 		playerEntries.forEach(([_, player]) => {
-			if (!player.folded && player.bet > 0) {
+			if (!player.folded && player.bet > 0 && !player.inComebackMode) {
 				player.cards.forEach(card => {
 					const cardKey = `${card.suit}-${card.rank}`;
 					cardCounts.set(cardKey, (cardCounts.get(cardKey) || 0) + 1);
@@ -226,18 +251,23 @@ export const PresenterGameView: React.FC = () => {
 					);
 				})}
 				
-				{/* Eliminated Players */}
-				{eliminatedPlayers.map((playerName, idx) => (
+				{/* Comeback Mode Players */}
+				{comebackPlayers.map(([playerId, player]) => (
 					<div
-						key={`eliminated-${idx}`}
-						className="rounded-lg border-2 border-gray-400 bg-gray-200 p-2 opacity-60"
+						key={`comeback-${playerId}`}
+						className="rounded-lg border-2 border-blue-400 bg-blue-50 p-2"
 					>
-						<p className="mb-1 text-center text-sm font-bold truncate text-gray-700">
-							{playerName}
+						<p className="mb-1 text-center text-sm font-bold truncate text-blue-800">
+							{player.name}
 						</p>
-						<p className="text-center text-xs font-bold text-red-600">
-							GAME OVER
+						<p className="text-center text-xs text-blue-600">
+							{config.comebackModePresenterDescription}
 						</p>
+						{player.comebackPrediction && (
+							<p className="text-center text-xs text-blue-700 mt-1">
+								{config.comebackPredictingLabel} {players[player.comebackPrediction]?.name || '?'}
+							</p>
+						)}
 					</div>
 				))}
 			</div>

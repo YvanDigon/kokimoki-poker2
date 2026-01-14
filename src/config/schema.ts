@@ -68,16 +68,60 @@ export const schema = z.object({
 	viewHandRankings: z.string().default('Rules'),
 	importantNoteTitle: z.string().default('Important Note'),
 	importantNoteText: z.string().default('It\'s forbidden to cheat. Don\'t try to figure out how to cheat. Be a good boy!'),
+
+	// Poker hand names
+	handNameHighCard: z.string().default('High Card'),
+	handNameOnePair: z.string().default('One Pair'),
+	handNameTwoPair: z.string().default('Two Pair'),
+	handNameThreeOfAKind: z.string().default('Three of a Kind'),
+	handNameStraight: z.string().default('Straight'),
+	handNameFlush: z.string().default('Flush'),
+	handNameFullHouse: z.string().default('Full House'),
+	handNameFourOfAKind: z.string().default('Four of a Kind'),
+	handNameStraightFlush: z.string().default('Straight Flush'),
+	handNameRoyalFlush: z.string().default('Royal Flush'),
+
+	// Hand ranking modal content
+	handExampleHighCard: z.string().default('A♠ J♥ 9♦ 6♣ 3♠'),
+	handExampleOnePair: z.string().default('10♠ 10♥ K♦ 8♣ 3♠'),
+	handExampleTwoPair: z.string().default('J♠ J♥ 5♦ 5♣ 2♠'),
+	handExampleThreeOfAKind: z.string().default('7♠ 7♥ 7♦ K♣ 3♠'),
+	handExampleStraight: z.string().default('10♠ 9♥ 8♦ 7♣ 6♠'),
+	handExampleFlush: z.string().default('J♦ 9♦ 7♦ 4♦ 2♦'),
+	handExampleFullHouse: z.string().default('Q♠ Q♥ Q♦ 8♣ 8♠'),
+	handExampleFourOfAKind: z.string().default('K♠ K♥ K♦ K♣ 3♠'),
+	handExampleStraightFlush: z.string().default('9♥ 8♥ 7♥ 6♥ 5♥'),
+	handExampleRoyalFlush: z.string().default('A♠ K♠ Q♠ J♠ 10♠'),
+
+	handDescHighCard: z.string().default('No matching cards, highest card wins'),
+	handDescOnePair: z.string().default('Two cards with the same rank'),
+	handDescTwoPair: z.string().default('Two cards of one rank and two cards of another rank'),
+	handDescThreeOfAKind: z.string().default('Three cards with the same rank'),
+	handDescStraight: z.string().default('Five cards in sequence, not all of the same suit'),
+	handDescFlush: z.string().default('Five cards of the same suit, not in sequence'),
+	handDescFullHouse: z.string().default('Three cards of one rank and two cards of another rank'),
+	handDescFourOfAKind: z.string().default('Four cards with the same rank'),
+	handDescStraightFlush: z.string().default('Five cards in sequence, all of the same suit'),
+	handDescRoyalFlush: z.string().default('A, K, Q, J, 10, all of the same suit'),
 	
 	startGameButton: z.string().default('Start Game'),
 	endBettingButton: z.string().default('End Betting Phase'),
 	newRoundButton: z.string().default('Start New Round'),
 	endGameButton: z.string().default('End Game'),
 	startNewGameButton: z.string().default('Start New Game'),
-	
-	gameOver: z.string().default('Game Over'),
-	gameOverMd: z.string().default('You ran out of gold! Better luck next time.'),
-	rejoinButton: z.string().default('Rejoin Game'),
+
+	// Hand quality labels
+	handQualityHighCard: z.string().default('Bad hand'),
+	handQualityOnePair: z.string().default('Meh hand'),
+	handQualityTwoPair: z.string().default('Good hand'),
+	handQualityThreeOfAKind: z.string().default('Nice hand'),
+	handQualityStraight: z.string().default('Great hand'),
+	handQualityFlush: z.string().default('Strong hand'),
+	handQualityFullHouse: z.string().default('Excellent hand'),
+	handQualityFourOfAKind: z.string().default('Incredible hand'),
+	handQualityStraightFlush: z.string().default('Amazing hand'),
+	handQualityRoyalFlush: z.string().default('Legendary hand'),
+	handQualityUnknown: z.string().default('Unknown hand'),
 	
 	redistributedGoldTitle: z.string().default('💰 Bonus Gold'),
 	redistributedGoldMessage: z.string().default('You received part of the gold redistributed from caught cheaters!'),
@@ -96,9 +140,31 @@ export const schema = z.object({
 	cheatTip2: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 2:** After placing your bet, tap 4 times on "Bet Placed!" to open a secret menu where you can mug another player and steal gold equal to your bet amount.'),
 	cheatTip3: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 3:** After changing cards but before betting, refresh your browser to change cards again. Beware: Do this twice and you\'ll get duplicate cards - instant cheater hand!'),
 	
+	comebackModeTitle: z.string().default('🎯 Comeback Mode'),
+	comebackModeDescription: z.string().default('You ran out of gold! Predict correctly to come back into play!'),
+	comebackModePresenterDescription: z.string().default('🎯 Busted - Predict the winner to get back in the game!'),
+	comebackBankruptTitle: z.string().default('💸 Busted!'),
+	comebackBankruptMessage: z
+		.string()
+		.default(
+			"You're out of gold and entered Comeback Mode. Predict this round's winner to get back in the game!"
+		),
+	comebackWaitingMessage: z.string().default('Waiting for next round to start...'),
+	comebackPredictWinner: z.string().default('Predict the Winner'),
+	comebackYourPrediction: z.string().default('Your Prediction:'),
+	comebackNoPrediction: z.string().default('No prediction yet'),
+	comebackChangePrediction: z.string().default('Change Prediction'),
+	comebackSuccessTitle: z.string().default('🎉 Correct Prediction!'),
+	comebackSuccessMessage: z.string().default('You predicted correctly! You\'re back in the game with {amount} gold.'),
+	comebackFailedTitle: z.string().default('❌ Wrong Prediction'),
+	comebackFailedMessage: z.string().default('You incorrectly predicted the winner. Better luck next round!'),
+	comebackPredictingLabel: z.string().default('Predicting:'),
+	
 	finalRankingsTitle: z.string().default('Final Rankings'),
 	winner: z.string().default('Winner'),
 	resetPlayersButton: z.string().default('Reset Players'),
+	netLabel: z.string().default('Net'),
+	foldedLabel: z.string().default('Folded'),
 	
 	cheatDiscussionHint: z
 		.string()
@@ -119,7 +185,11 @@ export const schema = z.object({
 	betPlacedTitle: z.string().default('Bet Placed!'),
 	muggingInProgress: z.string().default('🎭 Mugging in progress...'),
 	muggingFailedMessage: z.string().default('🎭 The player you tried to mug has almost nothing left. You felt some pity and decided not to proceed with the theft. Your conscience is clear!'),
-	
+	muggedTitle: z.string().default("🎭 You've Been Mugged!"),
+	muggedMessage: z
+		.string()
+		.default('A mysterious player stole {amount} gold from you during the betting phase!'),
+
 	punishCheaters: z.string().default('Punish Cheaters'),
 	punishmentUsedMessage: z.string().default('Punishment already used this round'),
 	selectPlayersToAccuse: z.string().default('Select Players to Accuse'),
@@ -143,6 +213,16 @@ export const schema = z.object({
 	caughtCheatingTitle: z.string().default('⚠️ Caught Cheating!'),
 	wronglyAccusedMessage: z.string().default('You were wrongly accused! Your gold has been doubled.'),
 	caughtCheatingMessage: z.string().default('You were caught red-handed! Half your gold has been confiscated and redistributed to the honest players who stayed in the game.'),
+
+	// Elimination bonus strings
+	eliminationBonusTitle: z.string().default('💰 Elimination Bonus!'),
+	eliminationBonusMessage: z
+		.string()
+		.default("A rival went broke! You earned {amount} coins as a survivor's reward for staying in the game!"),
+	eliminationMissedTitle: z.string().default('😔 Missed Opportunity'),
+	eliminationMissedMessage: z
+		.string()
+		.default("A player went broke, but you folded early and missed out on the {amount} coin survivor's bonus. Stay in the game to reap the rewards!"),
 	
 	// Game settings
 	startingGold: z.number().default(100),
