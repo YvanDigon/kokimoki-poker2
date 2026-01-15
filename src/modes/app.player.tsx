@@ -31,7 +31,13 @@ const App: React.FC = () => {
 		if (started) {
 			const myPlayer = players[kmClient.id];
 			
-			// If player is in comeback mode, always show comeback view
+			// Game ended - show for all players including comeback mode
+			if (phase === 'ended') {
+				playerActions.setCurrentView('ended');
+				return;
+			}
+			
+			// If player is in comeback mode, show comeback view
 			if (myPlayer?.inComebackMode) {
 				playerActions.setCurrentView('comeback');
 				return;
@@ -42,8 +48,6 @@ const App: React.FC = () => {
 				playerActions.setCurrentView('betting');
 			} else if (phase === 'results') {
 				playerActions.setCurrentView('results');
-			} else if (phase === 'ended') {
-				playerActions.setCurrentView('ended');
 			}
 		} else {
 			playerActions.setCurrentView('lobby');

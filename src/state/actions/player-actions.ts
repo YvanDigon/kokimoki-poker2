@@ -102,6 +102,7 @@ async clearPlayerName() {
 		await kmClient.transact([playerStore], ([playerState]) => {
 			playerState.cheatMode = false;
 			playerState.cheatCardIndex = -1;
+			playerState.cardTaps = {};
 		});
 	},
 
