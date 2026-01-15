@@ -35,7 +35,6 @@ export const schema = z.object({
 	playerLinkLabel: z.string().default('Player Link'),
 	presenterLinkLabel: z.string().default('Presenter Link'),
 
-	hostInstructionsTitle: z.string().default('How to Host'),
 	hostInstructionsMd: z
 		.string()
 		.default(
@@ -171,7 +170,6 @@ export const schema = z.object({
 	comebackPredictWinner: z.string().default('Predict the Winner'),
 	comebackYourPrediction: z.string().default('Your Prediction:'),
 	comebackNoPrediction: z.string().default('No prediction yet'),
-	comebackChangePrediction: z.string().default('Change Prediction'),
 	comebackSuccessTitle: z.string().default('🎉 Correct Prediction!'),
 	comebackSuccessMessage: z.string().default('You predicted correctly! You\'re back in the game with {amount} gold.'),
 	comebackFailedTitle: z.string().default('❌ Wrong Prediction'),
