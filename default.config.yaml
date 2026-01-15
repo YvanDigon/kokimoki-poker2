@@ -153,8 +153,11 @@ denounceExplainer: 'If you suspect one or more players of cheating, use this'
 denounceTitle: 'Select Suspected Cheaters'
 denounceConfirm: 'Confirm'
 denounceCancel: 'Cancel'
+denounceHostPunishMessage: 'The host will manually punish suspected players.'
+denounceNoPlayersMessage: 'No other players to denounce.'
 
 botchedCheatingMessage: '🚨 You''ve been caught red-handed! Your greedy card-swapping has backfired - you now have duplicate cards. Your bet has been automatically placed. Good luck explaining this to the other players!'
+refreshCheatingDetectedMessage: '⚠️ System Alert: Multiple page refreshes detected! You''ve tried to cheat the system by refreshing twice to change cards again. As punishment, your bet was automatically placed and you might have duplicate cards in your hand. Nice try!'
 
 cheatTipTitle: '😈 You lost money on the previous round, ha ha ha!'
 cheatTip1: |
@@ -241,6 +244,9 @@ eliminationBonusTitle: '💰 Elimination Bonus!'
 eliminationBonusMessage: 'A rival went broke! You earned {amount} coins as a survivor''s reward for staying in the game!'
 eliminationMissedTitle: '😔 Missed Opportunity'
 eliminationMissedMessage: 'A player went broke, but you folded early and missed out on the {amount} coin survivor''s bonus. Stay in the game to reap the rewards!'
+
+gameEndedMessage: 'The game has ended!'
+gameEndedDescriptionMd: 'Thanks for playing! The host has ended the game.'
 
 # Poker-specific settings
 bettingPhaseDuration: 180 # In seconds

@@ -17,7 +17,7 @@ import { useSnapshot } from 'valtio';
 
 export const BettingPhaseView: React.FC = () => {
 	const { players, pot, bettingPhaseStartTime, roundNumber, losingPlayersLastRound } = useSnapshot(globalStore.proxy);
-	const { selectedCardIndices, cheatMode, cheatCardIndex, showCheatTip, botchedCheating, showMugSelector, mugTapCount } = useSnapshot(playerStore.proxy);
+	const { selectedCardIndices, cheatMode, cheatCardIndex, showCheatTip, botchedCheating, botchedFromRefresh, showMugSelector, mugTapCount } = useSnapshot(playerStore.proxy);
 	useServerTimer(250); // Force re-render every 250ms
 	
 	// Store selected cheat tip to prevent flickering
@@ -76,12 +76,13 @@ export const BettingPhaseView: React.FC = () => {
 			shouldShowTip
 		});
 		
-		// Update tip visibility, reset botched cheating, and reset mug taps
+		// Update tip visibility, reset botched cheating, reset mug taps, and clear card selection
 		kmClient.transact([playerStore], ([state]) => {
 			state.showCheatTip = shouldShowTip;
 			state.botchedCheating = false;
 			state.mugTapCount = 0;
 			state.showMugSelector = false;
+			state.selectedCardIndices = [];
 		});
 	}, [roundNumber, JSON.stringify(losingPlayersLastRound)]);
 
@@ -177,12 +178,13 @@ export const BettingPhaseView: React.FC = () => {
 					<div className="rounded-lg border-2 border-red-600 bg-red-100 p-4 shadow-md">
 						<div className="flex items-start justify-between">
 							<p className="text-sm font-bold text-red-800">
-								{config.botchedCheatingMessage}
+								{botchedFromRefresh ? config.refreshCheatingDetectedMessage : config.botchedCheatingMessage}
 							</p>
 							<button
 								onClick={async () => {
 									await kmClient.transact([playerStore], ([state]) => {
 										state.botchedCheating = false;
+										state.botchedFromRefresh = false;
 									});
 								}}
 								type="button"
@@ -299,12 +301,13 @@ return (
 			<div className="rounded-lg border-2 border-red-600 bg-red-100 p-4 shadow-md">
 				<div className="flex items-start justify-between">
 					<p className="text-sm font-bold text-red-800">
-						{config.botchedCheatingMessage}
+						{botchedFromRefresh ? config.refreshCheatingDetectedMessage : config.botchedCheatingMessage}
 					</p>
 					<button
 						onClick={async () => {
 							await kmClient.transact([playerStore], ([state]) => {
 								state.botchedCheating = false;
+								state.botchedFromRefresh = false;
 							});
 						}}
 						type="button"

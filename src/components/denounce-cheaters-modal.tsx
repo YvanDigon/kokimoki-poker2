@@ -59,12 +59,12 @@ export const DenounceCheaterModal: React.FC<DenounceCheaterModalProps> = ({
 				</h2>
 				
 				<p className="mb-4 text-center text-sm text-gray-600">
-					The host will manually punish suspected players.
+					{config.denounceHostPunishMessage}
 				</p>
 
 				{eligiblePlayers.length === 0 ? (
 					<p className="mb-4 text-center text-gray-600">
-						No other players to denounce.
+						{config.denounceNoPlayersMessage}
 					</p>
 				) : (
 					<div className="mb-6 space-y-2">

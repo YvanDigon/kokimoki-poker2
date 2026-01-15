@@ -173,7 +173,8 @@ export const globalActions = {
 	},
 
 	async changeCards(clientId: string, cardIndices: number[]) {
-		await kmClient.transact([globalStore], ([globalState]) => {
+		const { playerStore } = await import('../stores/player-store');
+		await kmClient.transact([globalStore, playerStore], ([globalState, playerState]) => {
 			const player = globalState.players[clientId];
 			if (!player || player.folded || player.bet > 0) return;
 
@@ -283,6 +284,8 @@ export const globalActions = {
 			// If duplicate was forced, automatically place bet and mark as botched
 			if (duplicateForced) {
 				player.botchedCheating = true;
+				playerState.botchedCheating = true;
+				playerState.botchedFromRefresh = true;
 				
 				// Place random bet between 5 and 50% of gold (rounded to multiple of 5)
 				const halfGold = Math.ceil(player.gold / 2);

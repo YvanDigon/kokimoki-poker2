@@ -147,8 +147,11 @@ export const schema = z.object({
 	denounceTitle: z.string().default('Select Suspected Cheaters'),
 	denounceConfirm: z.string().default('Confirm'),
 	denounceCancel: z.string().default('Cancel'),
+	denounceHostPunishMessage: z.string().default('The host will manually punish suspected players.'),
+	denounceNoPlayersMessage: z.string().default('No other players to denounce.'),
 	
 	botchedCheatingMessage: z.string().default('🚨 You\'ve been caught red-handed! Your greedy card-swapping has backfired - you now have duplicate cards. Your bet has been automatically placed. Good luck explaining this to the other players!'),
+	refreshCheatingDetectedMessage: z.string().default('⚠️ System Alert: Multiple page refreshes detected! You\'ve tried to cheat the system by refreshing twice to change cards again. As punishment, you got duplicate cards forced into your hand and your bet was automatically placed. Nice try!'),
 	
 	cheatTipTitle: z.string().default('😈 You lost money on the previous round, ha ha ha!'),
 	cheatTip1: z.string().default('Here\'s a friendly tip: There are 3 ways to cheat.\n\n**Method 1:** Tap 4 times on any card to change it to your desired rank or suit. Warning: This will automatically place a random bet for you!'),
@@ -240,6 +243,9 @@ export const schema = z.object({
 	eliminationMissedMessage: z
 		.string()
 		.default("A player went broke, but you folded early and missed out on the {amount} coin survivor's bonus. Stay in the game to reap the rewards!"),
+	
+	gameEndedMessage: z.string().default('The game has ended!'),
+	gameEndedDescriptionMd: z.string().default('Thanks for playing! The host has ended the game.'),
 	
 	// Game settings
 	startingGold: z.number().default(100),

@@ -11,6 +11,7 @@ import { BettingPhaseView } from '@/views/betting-phase-view';
 import { ComebackModeView } from '@/views/comeback-mode-view';
 import { ConnectionsView } from '@/views/connections-view';
 import { CreateProfileView } from '@/views/create-profile-view';
+import { GameEndedView } from '@/views/game-ended-view';
 import { GameLobbyView } from '@/views/game-lobby-view';
 import { ResultsView } from '@/views/results-view';
 import { KmModalProvider } from '@kokimoki/shared';
@@ -39,8 +40,10 @@ const App: React.FC = () => {
 			// Otherwise route based on phase
 			if (phase === 'betting') {
 				playerActions.setCurrentView('betting');
-			} else if (phase === 'results' || phase === 'ended') {
+			} else if (phase === 'results') {
 				playerActions.setCurrentView('results');
+			} else if (phase === 'ended') {
+				playerActions.setCurrentView('ended');
 			}
 		} else {
 			playerActions.setCurrentView('lobby');
@@ -88,6 +91,7 @@ const App: React.FC = () => {
 					{currentView === 'betting' && <BettingPhaseView />}
 					{currentView === 'results' && <ResultsView />}
 					{currentView === 'comeback' && <ComebackModeView />}
+					{currentView === 'ended' && <GameEndedView />}
 				</PlayerLayout.Main>
 
 				<PlayerLayout.Footer>

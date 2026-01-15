@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.15] - 2026-01-15
+
+### Fixed
+- Card selection is now automatically cleared when entering a new betting phase, preventing selection from persisting across rounds
+- All strings are added in default config YAML
+
 ## [0.1.14] - 2026-01-14
 
 ### Added
