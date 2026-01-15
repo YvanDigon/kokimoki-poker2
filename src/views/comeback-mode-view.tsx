@@ -131,7 +131,7 @@ export const ComebackModeView: React.FC = () => {
 										<div className="font-bold">{player.name}</div>
 										<div className="text-sm text-gray-600">
 											{isFolded ? (
-											<span className="text-red-600">Folded</span>
+										<span className="text-red-600">{config.foldedLabel}</span>
 											) : (
 												<span>
 													{config.betLabel} {player.bet} {getGoldEmoji(player.bet)}

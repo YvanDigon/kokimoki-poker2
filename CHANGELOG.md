@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.17] - 2026-01-15
+
+### Changed
+- Updated `ComebackModeView` to use `config.foldedLabel` instead of hardcoded "Folded" string
+- Removed unused config variables hostInstructionsTitle and comebackChangePrediction
+
 ## [0.1.16] - 2026-01-15
 
 ### Fixed
