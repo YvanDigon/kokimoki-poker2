@@ -37,7 +37,6 @@ gameLinksTitle: 'Game Links'
 playerLinkLabel: 'Player Link'
 presenterLinkLabel: 'Presenter Link'
 
-hostInstructionsTitle: 'How to Host'
 hostInstructionsMd: |
   # Welcome to Red Handed Poker!
 
@@ -182,7 +181,6 @@ comebackWaitingMessage: 'Waiting for next round to start...'
 comebackPredictWinner: 'Predict the Winner'
 comebackYourPrediction: 'Your Prediction:'
 comebackNoPrediction: 'No prediction yet'
-comebackChangePrediction: 'Change Prediction'
 comebackSuccessTitle: '🎉 Correct Prediction!'
 comebackSuccessMessage: 'You predicted correctly! You''re back in the game with {amount} gold.'
 comebackFailedTitle: '❌ Wrong Prediction'
@@ -252,7 +250,7 @@ gameEndedDescriptionMd: 'Thanks for playing! The host has ended the game.'
 bettingPhaseDuration: 180 # In seconds
 
 startingGold: 100 # The pot that each new player starts with
-minimalBet: 1 # The minimal value that each player bets in each betting phase, even when they fold
+minimalBet: 10 # The minimal value that each player bets in each betting phase, even when they fold
 
 betIncrementSmall: 5 # The value which the player can modify the bet, positively or negatively, during the betting phase
 betIncrementLarge: 25 # Same, but bigger value

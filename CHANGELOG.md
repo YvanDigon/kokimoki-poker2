@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.19] - 2026-01-19
+
+### Changed
+- Presenter view now shows final rankings sorted by remaining gold when the host ends the game
+- Presenter end-of-game screen hides "wrongly accused" and "caught cheating" badges to keep the final standings clean
+
 ## [0.1.18] - 2026-01-15
 
 ### Removed

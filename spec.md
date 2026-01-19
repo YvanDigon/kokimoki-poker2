@@ -66,6 +66,7 @@ A multiplayer 5-card draw poker game with betting phases, card changing mechanic
 - Real-time display of all players
 - 3-column grid layout during results
 - Shows player bets, hands, and winners
+- When the host ends the game, presenter shows final rankings sorted by remaining gold (highest first)
 
 ## Casino Theme
 - Green poker table background
