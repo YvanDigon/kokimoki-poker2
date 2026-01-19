@@ -69,6 +69,8 @@ export const schema = z.object({
 	placeBetButton: z.string().default('Place Bet'),
 	foldButton: z.string().default('Fold'),
 	allIn: z.string().default('ALL IN'),
+	allInDescription: z.string().default('You don\'t have enough gold for the minimal bet. You\'re now all in with your remaining gold!'),
+	yourBet: z.string().default('Your Bet'),
 	
 	youWon: z.string().default('You Won!'),
 	youLost: z.string().default('You Lost'),

@@ -43,7 +43,8 @@ export const globalActions = {
 				comebackPrediction: '',
 				justReturnedFromComeback: false,
 				failedComebackPrediction: false,
-				allPlayersFolded: false
+				allPlayersFolded: false,
+				isAllIn: false
 			};
 		}
 
@@ -68,10 +69,13 @@ export const globalActions = {
 				if (player.gold >= config.minimalBet) {
 					player.gold -= config.minimalBet;
 					globalState.pot += config.minimalBet;
+					player.isAllIn = false;
 				} else {
-					// Player doesn't have enough gold for minimal bet, take what they have
+					// Player doesn't have enough gold for minimal bet, mark as all-in
 					globalState.pot += player.gold;
+					player.bet = player.gold; // Their bet is all their remaining gold
 					player.gold = 0;
+					player.isAllIn = true;
 				}
 			}
 		});
@@ -154,6 +158,7 @@ export const globalActions = {
 			globalState.players[playerId].justReturnedFromComeback = false;
 			globalState.players[playerId].failedComebackPrediction = false;
 			globalState.players[playerId].allPlayersFolded = false;
+			globalState.players[playerId].isAllIn = false;
 			// Note: inComebackMode persists across rounds
 		}			globalState.remainingDeck = fullDeck;
 			
@@ -163,10 +168,13 @@ export const globalActions = {
 				if (player.gold >= config.minimalBet) {
 					player.gold -= config.minimalBet;
 					globalState.pot += config.minimalBet;
+					player.isAllIn = false;
 				} else {
-					// Player doesn't have enough gold for minimal bet, take what they have
+					// Player doesn't have enough gold for minimal bet, mark as all-in
 					globalState.pot += player.gold;
+					player.bet = player.gold; // Their bet is all their remaining gold
 					player.gold = 0;
+					player.isAllIn = true;
 				}
 			}
 		});
@@ -525,7 +533,8 @@ async startNewGame() {
 				comebackPrediction: '',
 				justReturnedFromComeback: false,
 				failedComebackPrediction: false,
-				allPlayersFolded: false
+				allPlayersFolded: false,
+				isAllIn: false
 		};
 	}
 });

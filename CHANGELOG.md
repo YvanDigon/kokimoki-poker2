@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.20] - 2026-01-19
+
+### Added
+- Added "all in" system for players with insufficient gold for the minimal bet
+- Players with less gold than the minimal bet are now marked as `isAllIn` and their remaining gold becomes their automatic bet
+- Added special UI for all-in players showing bet amount, cards, and hand ranking
+- All-in players can still fold or wait for the round to end
+- Added config strings: `allInDescription` and `yourBet`
+
+### Changed
+- Betting phase view now shows dedicated all-in screen instead of blank screen when player has insufficient gold
+
 ## [0.1.19] - 2026-01-19
 
 ### Changed

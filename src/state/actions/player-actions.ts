@@ -51,7 +51,8 @@ export const playerActions = {
 					comebackPrediction: '',
 					justReturnedFromComeback: false,
 					failedComebackPrediction: false,
-					allPlayersFolded: false
+					allPlayersFolded: false,
+					isAllIn: false
 				};
 		}
 	);

@@ -88,6 +88,100 @@ export const BettingPhaseView: React.FC = () => {
 
 	if (!myPlayer) return null;
 
+	// Define handler functions early so they can be used in all code paths
+	const handleFold = async () => {
+		await globalActions.fold(kmClient.id);
+	};
+
+	// Check if player is all in (no gold left but in round)
+	if (myPlayer.isAllIn) {
+		// All-in player can still fold or wait for round to end
+		if (myPlayer.folded) {
+			return (
+				<div className="flex w-full max-w-2xl flex-col gap-4">
+					<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg text-center">
+						<h2 className="mb-4 text-2xl font-bold text-gray-600">{config.youFolded}</h2>
+						<p className="text-gray-500">{config.waitingForRoundEnd}</p>
+					</div>
+				</div>
+			);
+		}
+
+		return (
+			<div className="flex w-full max-w-2xl flex-col gap-4">
+				{/* Timer */}
+				<div className="rounded-lg border-2 border-red-600 bg-white p-4 shadow-md">
+					<p className="mb-2 text-center text-lg font-bold">{config.timeRemaining}:</p>
+					<div className="text-4xl font-bold text-blue-600 text-center">
+						<KmTimeCountdown ms={Math.max(0, config.bettingPhaseDuration * 1000 - timeElapsed)} />
+					</div>
+				</div>
+
+				{/* All-in notification */}
+				<div className="rounded-lg border-2 border-orange-500 bg-orange-50 p-6 shadow-lg text-center">
+					<h2 className="mb-2 text-2xl font-bold text-orange-600">{config.allIn}</h2>
+					<p className="text-gray-600 mb-4">
+						{config.allInDescription}
+					</p>
+					<p className="text-lg font-bold text-green-600">
+						{config.yourBet}: {myPlayer.bet}
+					</p>
+				</div>
+
+				{/* Cards */}
+				<div className="rounded-lg border-2 border-green-600 bg-white p-6 shadow-lg">
+					<div className="mb-4 flex items-center justify-between">
+						<h3 className="font-bold">{config.yourCards}</h3>
+						<HandRankingsModal currentCards={myPlayer.cards} />
+					</div>
+					{/* Hand Quality */}
+					{(() => {
+						const isDuplicate = hasDuplicateCards(myPlayer.cards);
+						if (isDuplicate) {
+							return (
+								<div className="mb-3 text-center">
+									<span className="text-lg font-bold text-red-600">
+										{config.cheaterHand}
+									</span>
+								</div>
+							);
+						}
+						
+						const evaluation = evaluateHand(myPlayer.cards);
+						const quality = getHandQuality(evaluation);
+						return (
+							<div className="mb-3 text-center">
+								<span className="text-lg font-bold text-blue-600">
+									{quality.emoji} {quality.text}
+								</span>
+							</div>
+						);
+					})()}
+
+					<div className="flex flex-wrap justify-center gap-2">
+						{myPlayer.cards.map((card, index) => (
+							<PlayingCard
+								key={`${card.suit}-${card.rank}-${index}`}
+								card={card}
+							/>
+						))}
+					</div>
+				</div>
+
+				{/* Fold option for all-in players */}
+				<div className="rounded-lg border-2 border-red-600 bg-white p-6 shadow-lg">
+					<button
+						onClick={handleFold}
+						type="button"
+						className="w-full rounded-lg bg-red-600 px-4 py-3 font-bold text-white hover:bg-red-700"
+					>
+						{config.foldButton}
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 	// Check if player is eliminated (no gold left)
 	if (myPlayer.gold <= 0) {
 		return null; // Don't show anything, wait for transition to results view
@@ -143,10 +237,6 @@ export const BettingPhaseView: React.FC = () => {
 	const handlePlaceBet = async () => {
 		if (localBet === 0) return;
 		await globalActions.placeBet(kmClient.id, localBet);
-	};
-
-	const handleFold = async () => {
-		await globalActions.fold(kmClient.id);
 	};
 
 	const isAllIn = localBet === myPlayer.gold && localBet > 0;

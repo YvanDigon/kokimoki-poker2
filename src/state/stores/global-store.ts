@@ -46,6 +46,7 @@ export interface PlayerData {
 	justReturnedFromComeback: boolean;
 	failedComebackPrediction: boolean;
 	allPlayersFolded: boolean;
+	isAllIn: boolean;
 }
 
 const initialState: GlobalState = {

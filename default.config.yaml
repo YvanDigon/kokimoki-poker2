@@ -75,6 +75,8 @@ cardsChanged: 'Cards changed! You can now place your bet.'
 placeBetButton: 'Place Bet'
 foldButton: 'Fold'
 allIn: 'ALL IN'
+allInDescription: 'You don''t have enough gold for the minimal bet. You''re now all in with your remaining gold!'
+yourBet: 'Your Bet'
 
 youWon: 'You Won!'
 youLost: 'You Lost'
